@@ -15,7 +15,8 @@
 
 #### Modelos asociados
 
-`class User`: Información de usuarios del sistema
+- `class User`: Información de usuarios del sistema
+  - `type`
 
 ### Django app: `screens`
 
@@ -41,9 +42,10 @@ Nota: las pantallas por ahora asumimos que son Raspberry Pi en [modo kiosko](htt
 
 ### Django app: `gtfs`
 
-- `gtfs/`:
+- `/gtfs/`:
 - `/gtfs/schedule/`: Información y configuración del *feed* GTFS Schedule utilizado
 - `/gtfs/realtime/`: Información y configuración del *feed* GTFS Realtime utilizado
+- `/gtfs/company/`: Las pantallas pueden desplegar información de uno o más *feeds* provenientes de una o más compañías
 
  #### Modelos asociados
  
