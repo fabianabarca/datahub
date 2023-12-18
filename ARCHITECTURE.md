@@ -11,7 +11,11 @@
 
 ### Django app: `website`
 
+> Manejo de páginas misceláneas del sitio.
+
 - `/`: Página de bienvenida del sistema
+- `/sobre/`: Información del proyecto
+- `/perfil/`: Perfil de usuario registrado
 
 #### Modelos asociados
 
@@ -20,9 +24,11 @@
 
 ### Django app: `screens`
 
+> Páginas de administración de las pantallas (HTML) y actualización de datos en tiempo real (WebSockets)
+
 - `/pantallas/`: Lista de pantallas del sistema
-- `/pantallas/crear`: Página de creación de nueva pantalla
-- `/pantallas/<screen_id>/`: Visualización de la pantalla (contenido)
+- `/pantallas/crear/`: Página de creación de nueva pantalla
+- `/pantallas/<screen_id>/`: Visualización de la pantalla (**contenido de la pantalla**)
 - `/pantallas/<screen_id>/configuracion/`: Sitio de configuración de la pantalla `screen_id`
 
 
@@ -41,6 +47,8 @@ Nota: las pantallas por ahora asumimos que son Raspberry Pi en [modo kiosko](htt
   - `has_sound` (ejemplo: `True`, `False`, booleano)
 
 ### Django app: `gtfs`
+
+> Páginas de administación de información GTFS Schedule y GTFS Realtime.
 
 - `/gtfs/`:
 - `/gtfs/schedule/`: Información y configuración del *feed* GTFS Schedule utilizado
