@@ -7,3 +7,9 @@
 <p>El más importante: schedule_url</p>
 
 <p>Cosas para hacer por aquí: validad URL, hacer un request de prueba, también para ver datos históricos del feed, etc.</p>
+
+<ol>
+    {% for user in users %}
+        <li>{{ user.first_name }}: {{ user.last_name }}</li>
+    {% endfor %}
+</ol>
