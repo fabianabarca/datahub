@@ -34,6 +34,7 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
 INSTALLED_APPS = [
     "website.apps.WebsiteConfig",
     "gtfs.apps.GtfsConfig",
+    "realtime.apps.RealtimeConfig",
     "screens.apps.ScreensConfig",
     "django.contrib.admin",
     "django.contrib.auth",
