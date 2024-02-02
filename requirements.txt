@@ -1,2 +1,6 @@
 django
 python-decouple
+configparser
+schedule
+pandas
+gtfs-realtime-bindings
