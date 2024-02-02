@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import random
 
 # Create your views here.
 
@@ -12,7 +13,10 @@ def create_screen(request):
 
 
 def screen(request, screen_id):
-    context = {"screen_id": screen_id}
+    seed = screen_id
+    random.seed(seed)
+    minutes = random.randint(0, 30)
+    context = {"screen_id": screen_id, "minutes": minutes}
     return render(request, "screen.html", context)
 
 
