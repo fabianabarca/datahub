@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from decouple import config, Csv
+import platform
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,10 +81,15 @@ WSGI_APPLICATION = "gtfs_screens.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": config('DB_NAME'),
+        "USER": config('DB_USER'),
+    },
 }
+
+if not (platform.platform() == "Linux" or platform.machine() == "x86_64"):
+    GDAL_LIBRARY_PATH = config('GDAL_LIBRARY_PATH')
+    GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH')
 
 
 # Password validation
