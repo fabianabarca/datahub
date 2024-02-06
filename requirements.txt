@@ -4,3 +4,4 @@ configparser
 schedule
 pandas
 gtfs-realtime-bindings
+psychopg
