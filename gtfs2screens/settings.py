@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     "gtfs.apps.GtfsConfig",
     "realtime.apps.RealtimeConfig",
     "screens.apps.ScreensConfig",
+    "django_celery_results",
+    "django_celery_beat",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -82,14 +84,14 @@ WSGI_APPLICATION = "gtfs2screens.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "NAME": config('DB_NAME'),
-        "USER": config('DB_USER'),
+        "NAME": config("DB_NAME"),
+        "USER": config("DB_USER"),
     },
 }
 
 if not (platform.platform() == "Linux" or platform.machine() == "x86_64"):
-    GDAL_LIBRARY_PATH = config('GDAL_LIBRARY_PATH')
-    GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH')
+    GDAL_LIBRARY_PATH = config("GDAL_LIBRARY_PATH")
+    GEOS_LIBRARY_PATH = config("GEOS_LIBRARY_PATH")
 
 
 # Password validation
@@ -109,6 +111,12 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+# Celery settings
+
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "django-cache"
 
 
 # Internationalization

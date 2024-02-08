@@ -4,3 +4,5 @@ configparser
 schedule
 pandas
 gtfs-realtime-bindings
+django-celery-results
+django-celery-beat
