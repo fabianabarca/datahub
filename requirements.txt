@@ -2,8 +2,10 @@ django
 channels
 python-decouple
 configparser
+requests
 schedule
 pandas
 gtfs-realtime-bindings
+celery[redis]
 django-celery-results
 django-celery-beat
