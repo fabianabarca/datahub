@@ -62,6 +62,9 @@ db.sqlite3
 db.sqlite3-journal
 migrations/
 
+# Redis stuff
+*.rdb
+
 # macOS stuff:
 .DS_Store
 
