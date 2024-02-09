@@ -1,4 +1,5 @@
 django
+channels
 python-decouple
 configparser
 schedule
