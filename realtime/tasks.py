@@ -1,27 +1,24 @@
 # Create your tasks here
 
-from website.models import User
+from .models import Test
 
 from celery import shared_task
 
-
-@shared_task
-def add(x, y):
-    return x + y
+import requests
+from time import sleep
 
 
 @shared_task
-def mul(x, y):
-    return x * y
+def test_celery():
+    response = requests.get("https://api.chucknorris.io/jokes/random")
+    joke = response.json()["value"]
+    Test.objects.create(joke=joke)
+    return joke
 
 
 @shared_task
-def count_users():
-    return User.objects.count()
-
-
-@shared_task
-def rename_user(user_id, name):
-    w = User.objects.get(user_id=user_id)
-    w.name = name
-    w.save()
+def hello_celery(x, y):
+    for i in range(6):
+        print(i)
+        sleep(1)
+    return f"Done! {x} + {y} = {x + y}"
