@@ -22,3 +22,18 @@ def hello_celery(x, y):
         print(i)
         sleep(1)
     return f"Done! {x} + {y} = {x + y}"
+
+
+@shared_task
+def get_vehiclepositions():
+    return "VehiclePositions"
+
+
+@shared_task
+def get_tripupdates():
+    return "TripUpdates"
+
+
+@shared_task
+def get_gtfs():
+    return "GTFS"
