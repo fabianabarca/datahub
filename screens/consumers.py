@@ -59,9 +59,9 @@ class ScreenConsumer(AsyncWebsocketConsumer):
             self.screen_group_name, {"type": "screen.message", "message": message}
         )
 
-    # Receive message from room group
+    # Send message to WebSocket
     async def screen_message(self, event):
         message = event["message"]
 
-        # Send message to WebSocket
         await self.send(text_data=json.dumps({"message": message}))
+    
