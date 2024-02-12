@@ -1,5 +1,6 @@
-# gtfs-screens
-Implementación de pantallas con GTFS
+# gtfs2screens
+
+Implementación de pantallas con información en tiempo real de transporte público a partir de la especificación GTFS
 
 ## Equipo de trabajo
 
