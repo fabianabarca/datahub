@@ -33,3 +33,35 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({"message": message}))
+
+
+class ScreenConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.screen_id = self.scope["url_route"]["kwargs"]["screen_id"]
+        self.screen_group_name = "screen" # f"screen_{self.screen_id}"
+
+        # Join room group
+        await self.channel_layer.group_add(self.screen_group_name, self.channel_name)
+
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        # Leave room group
+        await self.channel_layer.group_discard(self.screen_group_name, self.channel_name)
+
+    # Receive message from WebSocket
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        message = text_data_json["message"]
+
+        # Send message to room group
+        await self.channel_layer.group_send(
+            self.screen_group_name, {"type": "screen.message", "message": message}
+        )
+
+    # Receive message from room group
+    async def screen_message(self, event):
+        message = event["message"]
+
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({"message": message}))
