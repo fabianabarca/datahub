@@ -10,10 +10,10 @@ from time import sleep
 
 @shared_task
 def test_celery():
-    response = requests.get("https://api.chucknorris.io/jokes/random")
-    joke = response.json()["value"]
-    Test.objects.create(joke=joke)
-    return joke
+    response = requests.get("https://uselessfacts.jsph.pl/api/v2/facts/random")
+    text = response.json()["text"]
+    Test.objects.create(text=text)
+    return text
 
 
 @shared_task
