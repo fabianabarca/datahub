@@ -6,7 +6,26 @@
     Pantalla: {{ screen_id }}
 </p>
 
+<p id="message"></p>
+
 <script>
     // Aquí un archivo para manejar las actualizaciones de la pantalla con WebSockets
     // https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications
+    // Crear un WebSocket 
+    const screenSocket = new WebSocket('ws://127.0.0.1:8000/ws/screen/');
+
+    // Registrar la conexión abierta
+    screenSocket.onopen = function (event) {
+        console.log('Conexión abierta');
+    };
+
+    // Manejo de eventos de mensajes
+    screenSocket.onmessage = function (event) {
+        console.log('Mensaje recibido:', event.data);
+        const data = JSON.parse(event.data);
+        const message = data['message'];
+        if (message) {
+            document.getElementById('message').innerHTML = message;
+        }
+    };
 </script>
