@@ -6,8 +6,8 @@ from .tasks import test_celery, hello_celery
 
 
 def test(request):
-    joke = test_celery.delay()
-    return HttpResponse(joke.get())
+    text = test_celery.delay()
+    return HttpResponse(text.get())
 
 
 def hello(request):

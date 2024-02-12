@@ -4,8 +4,8 @@ from django.db import models
 
 
 class Test(models.Model):
-    joke = models.TextField()
+    text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.created_at}: {self.joke}"
+        return f"{self.created_at}: {self.text}"
