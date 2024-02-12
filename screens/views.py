@@ -23,3 +23,8 @@ def screen(request, screen_id):
 def edit_screen(request, screen_id):
     context = {"screen_id": screen_id}
     return render(request, "edit_screen.html", context)
+
+
+# Testing the websocket
+def chat(request, room_name):
+    return render(request, "chat.html", {"room_name": room_name})
