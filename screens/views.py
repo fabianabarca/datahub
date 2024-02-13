@@ -36,6 +36,7 @@ def edit_screen(request, screen_id):
 def update_screen(request, screen_id):
     """Update a screen.
     """
+    # Get a Django Signal signaling that the FeedMessage has been processed and there are updates for each stop.
     # For each screen, collect all data linked to it and send it, with a given format, to the screen via websocket.
     return 0
 
