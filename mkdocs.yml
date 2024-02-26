@@ -1,0 +1,13 @@
+site_name: Sistema de pantallas en tiempo real
+
+nav:
+  - Inicio: index.md
+  - Arquitectura: architecture.md
+  - Sobre el proyecto: about.md
+
+theme:
+  name: material
+  features:
+    - navigation.expand
+    - navigation.tabs
+    - toc.integrate
