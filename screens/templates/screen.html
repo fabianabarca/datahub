@@ -12,11 +12,12 @@
     // Aquí un archivo para manejar las actualizaciones de la pantalla con WebSockets
     // https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications
     // Crear un WebSocket 
-    const screenSocket = new WebSocket('ws://127.0.0.1:8000/ws/screen/{{ screen_id }}/');
+    const wsUrl = 'ws://' + window.location.host + '/ws/screen/{{ screen_id }}/';
+    const screenSocket = new WebSocket(wsUrl);
 
     // Registrar la conexión abierta
     screenSocket.onopen = function (event) {
-        console.log('gtfs2screens: Conexión abierta exitosamente.');
+        console.log('gtfs2screens: Conexión abierta exitosamente en ' + wsUrl);
     };
 
     // Manejo de eventos de mensajes
@@ -28,4 +29,8 @@
             document.getElementById('message').innerHTML = message;
         }
     };
+
+    window.addEventListener('beforeunload', function (event) {
+        screenSocket.close();
+    });
 </script>

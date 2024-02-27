@@ -1,11 +1,12 @@
 # Create your tasks here
 
 from .models import Test
+from screens.models import Screen
 
 from celery import shared_task
 
 from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 
 import requests
 from time import sleep
@@ -17,13 +18,16 @@ def test_celery():
     text = response.json()["text"]
     Test.objects.create(text=text)
     channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        "screen",
-        {
-            "type": "screen_message",
-            "message": text,
-        },
-    )
+    screens = Screen.objects.filter(is_active=True)
+    sync_to_async(print)(f"Task: {screen}")
+    for screen in screens:
+        async_to_sync(channel_layer.group_send)(
+            f"screen_{screen.screen_id}",
+            {
+                "type": "screen_message",
+                "message": f"{screen.screen_id}: {text}",
+            },
+        )
     return text
 
 
