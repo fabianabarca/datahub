@@ -17,17 +17,26 @@ class Screen(models.Model):
 
     screen_id = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
-    description = models.TextField()
-    location = models.PointField()
-    address = models.TextField()
+    description = models.TextField(blank=True, null=True)
+    location = models.PointField(blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
     orientation = models.CharField(
-        max_length=10, choices=ORIENTATION_CHOICES, default="landscape"
+        max_length=10,
+        choices=ORIENTATION_CHOICES,
+        default="landscape",
+        blank=True, null=True,
     )
-    ratio = models.CharField(max_length=10, choices=RATIO_CHOICES, default="16:9")
-    size = models.PositiveIntegerField(help_text="in inches")
+    ratio = models.CharField(
+        max_length=10, 
+        choices=RATIO_CHOICES, 
+        default="16:9", 
+        blank=True, null=True
+    )
+    size = models.PositiveIntegerField(help_text="in inches", blank=True, null=True)
     has_audio = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
