@@ -1,17 +1,11 @@
 # Sistema de pantallas en tiempo real del bus interno de la UCR
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+La información en tiempo real sobre el transporte público es uno de los servicios mejor apreciados por las personas usuarias.
 
-## Commands
+## Descripción
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+Este es un proyecto realizado por la Escuela de Ingeniería Eléctrica de la Universidad de Costa Rica, en conjunto con la Oficina de Servicios Generales.
 
-## Project layout
+## Implementación
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+El primer prototipo del sistema de pantallas en tiempo real será implementado en la segunda mitad de 2024.
