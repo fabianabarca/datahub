@@ -23,3 +23,14 @@ Es necesario separar los datos que son relevantes para cada parada (¿tópicos?)
 (Raspberry Pi)
 
 Ejemplo de primer prototipo: Soda de Ingeniería (no requiere protección).
+
+## Notas sobre problemas
+
+Cuando hay problemas con migraciones:
+
+```bash
+$ python manage.py migrate --fake <app> zero
+$ (borrar migrations)
+$ python manage.py makemigrations <app>
+$ python manage.py migrate
+```
