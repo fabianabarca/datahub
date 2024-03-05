@@ -611,5 +611,9 @@ class VehiclePosition(models.Model):
     # CarriageDetails (message)
     multi_carriage_details = models.CharField(max_length=255, blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        self.position_point = Point(self.position_longitude, self.position_latitude)
+        super(VehiclePosition, self).save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.entity_id} ({self.feed_message})"
