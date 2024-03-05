@@ -381,7 +381,9 @@ class FeedInfo(models.Model):
         help_text="Fecha de inicio de la información del feed.", blank=True, null=True
     )
     feed_end_date = models.DateField(
-        help_text="Fecha de finalización de la información del feed.", blank=True, null=True
+        help_text="Fecha de finalización de la información del feed.",
+        blank=True,
+        null=True,
     )
     feed_version = models.CharField(
         max_length=255, blank=True, null=True, help_text="Versión del feed."
@@ -412,7 +414,11 @@ class FareAttribute(models.Model):
         help_text="Método de pago.",
     )
     transfers = models.PositiveSmallIntegerField(
-        choices=((0, "No permitido"), (1, "Permitido"), (2, "Permitido dentro de la misma agencia")),
+        choices=(
+            (0, "No permitido"),
+            (1, "Permitido"),
+            (2, "Permitido dentro de la misma agencia"),
+        ),
         help_text="Número de transferencias permitidas.",
     )
     transfer_duration = models.PositiveSmallIntegerField(
@@ -439,6 +445,171 @@ class FareRule(models.Model):
     def __str__(self):
         return f"{self.fare_id}: {self.route_id}"
 
+
 # -------------
 # GTFS Realtime
 # -------------
+
+
+class FeedMessage(models.Model):
+    """
+    Header of a GTFS Realtime FeedMessage.
+
+    This is metadata to link records of other models to a retrieved FeedMessage containing several entities, typically (necessarily, in this implementation) of a single kind.
+    """
+
+    feed_message_id = models.BigAutoField(primary_key=True)
+    timestamp = models.DateTimeField(auto_now=True)
+    entity_type = models.CharField(max_length=63)
+    incrementality = models.CharField(max_length=15)
+    gtfs_realtime_version = models.CharField(max_length=15)
+
+    class Meta:
+        unique_together = (("timestamp", "entity_type"),)
+
+    def __str__(self):
+        return f"{self.entity_type} ({self.timestamp})"
+
+
+class TripUpdate(models.Model):
+    """
+    GTFS Realtime TripUpdate entity v2.0 (normalized).
+
+    Trip updates represent fluctuations in the timetable.
+    """
+
+    trip_update_id = models.BigAutoField(primary_key=True)
+    entity_id = models.CharField(max_length=127)
+
+    # Foreign key to FeedMessage model
+    feed_message = models.ForeignKey("FeedMessage", on_delete=models.CASCADE)
+
+    # TripDescriptor (message)
+    trip_trip_id = models.CharField(max_length=255, blank=True, null=True)
+    trip_route_id = models.CharField(max_length=255, blank=True, null=True)
+    trip_direction_id = models.IntegerField(blank=True, null=True)
+    trip_start_time = models.TimeField(blank=True, null=True)
+    trip_start_date = models.DateField(blank=True, null=True)
+    trip_schedule_relationship = models.CharField(
+        max_length=31, blank=True, null=True
+    )  # (enum)
+
+    # VehicleDescriptor (message)
+    vehicle_id = models.CharField(max_length=255, blank=True, null=True)
+    vehicle_label = models.CharField(max_length=255, blank=True, null=True)
+    vehicle_license_plate = models.CharField(max_length=255, blank=True, null=True)
+    vehicle_wheelchair_accessible = models.CharField(
+        max_length=31, blank=True, null=True
+    )  # (enum)
+
+    # Timestamp (uint64)
+    timestamp = models.DateTimeField(blank=True, null=True)
+
+    # Delay (int32)
+    delay = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.entity_id} ({self.feed_message})"
+
+
+class StopTimeUpdate(models.Model):
+    """
+    GTFS Realtime TripUpdate message v2.0 (normalized).
+
+    Realtime update for arrival and/or departure events for a given stop on a trip, linked to a TripUpdate entity in a FeedMessage.
+    """
+
+    stop_time_update_id = models.BigAutoField(primary_key=True)
+
+    # Foreign key to TripUpdate model
+    trip_update = models.ForeignKey("TripUpdate", on_delete=models.CASCADE)
+
+    # Stop ID (string)
+    stop_sequence = models.IntegerField()
+    stop_id = models.CharField(max_length=127, blank=True, null=True)
+
+    # StopTimeEvent (message): arrival
+    arrival_delay = models.IntegerField(blank=True, null=True)
+    arrival_time = models.DateTimeField(blank=True, null=True)
+    arrival_uncertainty = models.IntegerField(blank=True, null=True)
+
+    # StopTimeEvent (message): departure
+    departure_delay = models.IntegerField(blank=True, null=True)
+    departure_time = models.DateTimeField(blank=True, null=True)
+    departure_uncertainty = models.IntegerField(blank=True, null=True)
+
+    # OccupancyStatus (enum)
+    departure_occupancy_status = models.CharField(max_length=255, blank=True, null=True)
+
+    # ScheduleRelationship (enum)
+    schedule_relationship = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.stop_id} ({self.trip_update})"
+
+
+class VehiclePosition(models.Model):
+    """
+    GTFS Realtime VehiclePosition entity v2.0 (normalized).
+
+    Vehicle position represents a few basic pieces of information about a particular vehicle on the network.
+    """
+
+    vehicle_position_id = models.BigAutoField(primary_key=True)
+    entity_id = models.CharField(max_length=127)
+
+    # Foreign key to FeedMessage model
+    feed_message = models.ForeignKey("FeedMessage", on_delete=models.CASCADE)
+
+    # TripDescriptor (message)
+    trip_trip_id = models.CharField(max_length=255)
+    vehicle_trip_route_id = models.CharField(max_length=255, blank=True, null=True)
+    trip_direction_id = models.IntegerField(blank=True, null=True)
+    trip_start_time = models.TimeField(blank=True, null=True)
+    trip_start_date = models.DateField(blank=True, null=True)
+    trip_schedule_relationship = models.CharField(
+        max_length=31, blank=True, null=True
+    )  # (enum)
+
+    # VehicleDescriptor (message)
+    vehicle_id = models.CharField(max_length=255, blank=True, null=True)
+    vehicle_label = models.CharField(max_length=255, blank=True, null=True)
+    vehicle_license_plate = models.CharField(max_length=255, blank=True, null=True)
+    vehicle_wheelchair_accessible = models.CharField(
+        max_length=31, blank=True, null=True
+    )  # (enum)
+
+    # Position (message)
+    position_latitude = models.FloatField(blank=True, null=True)
+    position_longitude = models.FloatField(blank=True, null=True)
+    position_point = models.PointField(srid=4326, blank=True, null=True)
+    position_bearing = models.FloatField(blank=True, null=True)
+    position_odometer = models.FloatField(blank=True, null=True)
+    position_speed = models.FloatField(blank=True, null=True)  # (meters/second)
+
+    # Current stop sequence (uint32)
+    current_stop_sequence = models.IntegerField(blank=True, null=True)
+
+    # Stop ID (string)
+    stop_id = models.CharField(max_length=255, blank=True, null=True)
+
+    # VehicleStopStatus (enum)
+    current_status = models.CharField(max_length=255, blank=True, null=True)
+
+    # Timestamp (uint64)
+    timestamp = models.DateTimeField(blank=True, null=True)
+
+    # CongestionLevel (enum)
+    congestion_level = models.CharField(max_length=255, blank=True, null=True)
+
+    # OccupancyStatus (enum)
+    occupancy_status = models.CharField(max_length=255, blank=True, null=True)
+
+    # OccupancyPercentage (uint32)
+    occupancy_percentage = models.IntegerField(blank=True, null=True)
+
+    # CarriageDetails (message)
+    multi_carriage_details = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.entity_id} ({self.feed_message})"
