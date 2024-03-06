@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -9,12 +8,7 @@ def gtfs(request):
 
 
 def schedule(request):
-    users = User.objects.all()
-    print(users)
-    context = {
-        "users": users,
-    }
-    return render(request, "schedule.html", context)
+    return render(request, "schedule.html")
 
 
 def realtime(request):
