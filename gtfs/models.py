@@ -8,7 +8,7 @@ from django.contrib.gis.geos import Point
 
 
 class Feed(models.Model):
-    feed_id = models.CharField(max_length=100)
+    feed_id = models.CharField(max_length=100, primary_key=True)
     is_current = models.BooleanField()
     retrieved_at = models.DateTimeField(auto_now=True)
 
@@ -464,9 +464,6 @@ class FeedMessage(models.Model):
     incrementality = models.CharField(max_length=15)
     gtfs_realtime_version = models.CharField(max_length=15)
 
-    class Meta:
-        unique_together = (("timestamp", "entity_type"),)
-
     def __str__(self):
         return f"{self.entity_type} ({self.timestamp})"
 
@@ -478,7 +475,7 @@ class TripUpdate(models.Model):
     Trip updates represent fluctuations in the timetable.
     """
 
-    trip_update_id = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     entity_id = models.CharField(max_length=127)
 
     # Foreign key to FeedMessage model
@@ -519,7 +516,7 @@ class StopTimeUpdate(models.Model):
     Realtime update for arrival and/or departure events for a given stop on a trip, linked to a TripUpdate entity in a FeedMessage.
     """
 
-    stop_time_update_id = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
 
     # Foreign key to TripUpdate model
     trip_update = models.ForeignKey("TripUpdate", on_delete=models.CASCADE)
@@ -555,7 +552,7 @@ class VehiclePosition(models.Model):
     Vehicle position represents a few basic pieces of information about a particular vehicle on the network.
     """
 
-    vehicle_position_id = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     entity_id = models.CharField(max_length=127)
 
     # Foreign key to FeedMessage model

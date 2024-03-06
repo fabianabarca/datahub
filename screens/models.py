@@ -6,8 +6,8 @@ from gtfs.models import Stop
 
 class Screen(models.Model):
     ORIENTATION_CHOICES = [
-        ("landscape", "Landscape"),
-        ("portrait", "Portrait"),
+        ("landscape", "Horizontal"),
+        ("portrait", "Vertical"),
     ]
     RATIO_CHOICES = [
         ("4:3", "4:3"),
@@ -15,7 +15,7 @@ class Screen(models.Model):
         ("16:10", "16:10"),
     ]
 
-    screen_id = models.CharField(max_length=100)
+    screen_id = models.CharField(max_length=100, primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     location = models.PointField(blank=True, null=True)
@@ -32,7 +32,7 @@ class Screen(models.Model):
         default="16:9", 
         blank=True, null=True
     )
-    size = models.PositiveIntegerField(help_text="in inches", blank=True, null=True)
+    size = models.PositiveIntegerField(help_text="diagonal en pulgadas", blank=True, null=True)
     has_audio = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -43,6 +43,7 @@ class Screen(models.Model):
 
 
 class ScreenStops(models.Model):
+    id = models.AutoField(primary_key=True)
     screen = models.ForeignKey(Screen, on_delete=models.CASCADE)
     stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
 
