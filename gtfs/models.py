@@ -2,6 +2,41 @@ from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
 
 
+class Company(models.Model):
+    """A company provides transportation services GTFS data.
+
+    It might or might not be the same as the agency in the GTFS feed. A company can have multiple agencies.
+    """
+
+    company_id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=255, help_text="Nombre de la empresa.")
+    description = models.TextField(blank=True, null=True, help_text="Descripción de la institución o empresa.")
+    website = models.URLField(
+        blank=True, null=True, help_text="Sitio web de la empresa."
+    )
+    schedule_url = models.URLField(
+        blank=True, null=True, help_text="URL del suministro (Feed) de GTFS Schedule."
+    )
+    trip_updates_url = models.URLField(
+        blank=True,
+        null=True,
+        help_text="URL del suministro (FeedMessage) Protobuf (.pb) de GTFS Realtime TripUpdates.",
+    )
+    vehicle_positions_url = models.URLField(
+        blank=True,
+        null=True,
+        help_text="URL del suministro (FeedMessage) Protobuf (.pb) de GTFS Realtime VehiclePositions.",
+    )
+    service_alerts_url = models.URLField(
+        blank=True,
+        null=True,
+        help_text="URL del suministro (FeedMessage) Protobuf (.pb) de GTFS Realtime ServiceAlerts.",
+    )
+
+    def __str__(self):
+        return self.name
+
+
 # -------------
 # GTFS Schedule
 # -------------
@@ -9,6 +44,7 @@ from django.contrib.gis.geos import Point
 
 class Feed(models.Model):
     feed_id = models.CharField(max_length=100, primary_key=True)
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, blank=True, null=True)
     is_current = models.BooleanField()
     retrieved_at = models.DateTimeField(auto_now=True)
 
@@ -54,6 +90,8 @@ class Agency(models.Model):
     class Meta:
         verbose_name = "agency"
         verbose_name_plural = "agencies"
+
+    # TODO: colocar las restricciones con unique_constraint. Por ejemplo: la combinación agency_id + feed debe ser única.
 
     def __str__(self):
         return self.agency_name
@@ -459,6 +497,7 @@ class FeedMessage(models.Model):
     """
 
     feed_message_id = models.BigAutoField(primary_key=True)
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now=True)
     entity_type = models.CharField(max_length=63)
     incrementality = models.CharField(max_length=15)
