@@ -1,15 +1,7 @@
-from django.shortcuts import render, HttpResponse
-
-from .tasks import test_celery, hello_celery
+from django.shortcuts import render
 
 # Create your views here.
 
 
-def test(request):
-    text = test_celery.delay()
-    return HttpResponse(text.get())
-
-
-def hello(request):
-    hello_celery.delay(2, 3)
-    return HttpResponse("Hello, world!")
+def realtime(request):
+    return render(request, "realtime.html")
