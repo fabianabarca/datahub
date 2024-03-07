@@ -1,6 +1,10 @@
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
 
+from django.db.models.signals import post_save
+
+from screens.multicast import test_signal
+
 
 class Company(models.Model):
     """A company provides transportation services GTFS data.
@@ -10,7 +14,9 @@ class Company(models.Model):
 
     company_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255, help_text="Nombre de la empresa.")
-    description = models.TextField(blank=True, null=True, help_text="Descripción de la institución o empresa.")
+    description = models.TextField(
+        blank=True, null=True, help_text="Descripción de la institución o empresa."
+    )
     website = models.URLField(
         blank=True, null=True, help_text="Sitio web de la empresa."
     )
@@ -44,7 +50,9 @@ class Company(models.Model):
 
 class Feed(models.Model):
     feed_id = models.CharField(max_length=100, primary_key=True)
-    company = models.ForeignKey(Company, on_delete=models.SET_NULL, blank=True, null=True)
+    company = models.ForeignKey(
+        Company, on_delete=models.SET_NULL, blank=True, null=True
+    )
     http_etag = models.CharField(max_length=1023, blank=True, null=True)
     is_current = models.BooleanField(blank=True, null=True)
     last_modified = models.DateTimeField(blank=True, null=True)
@@ -499,7 +507,9 @@ class FeedMessage(models.Model):
     """
 
     feed_message_id = models.BigAutoField(primary_key=True)
-    company = models.ForeignKey(Company, on_delete=models.SET_NULL, blank=True, null=True)
+    company = models.ForeignKey(
+        Company, on_delete=models.SET_NULL, blank=True, null=True
+    )
     timestamp = models.DateTimeField(auto_now=True)
     entity_type = models.CharField(max_length=63)
     incrementality = models.CharField(max_length=15)
@@ -655,3 +665,27 @@ class VehiclePosition(models.Model):
 
     def __str__(self):
         return f"{self.entity_id} ({self.feed_message})"
+
+
+# -------
+# Records
+# -------
+
+
+class Record(models.Model):
+    """A log of the GTFS Schedule updating sessions."""
+
+    id = models.BigAutoField(primary_key=True)
+    timestamp = models.DateTimeField(auto_now=True)
+    company = models.ForeignKey(
+        Company, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    data_source = models.URLField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.feed_transit_system} ({self.timestamp})"
+
+
+# Django Model Signal (find a good place for this)
+post_save.connect(test_signal, sender=Record)
