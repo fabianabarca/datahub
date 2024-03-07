@@ -12,3 +12,4 @@ schedule
 pandas
 gtfs-realtime-bindings
 python-decouple
+sqlalchemy
