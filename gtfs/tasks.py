@@ -91,6 +91,10 @@ def get_schedule():
             last_modified=last_modified,
         )
 
+    Record.objects.create(
+        data_source = "https://cdn.mbta.com/MBTA_GTFS.zip",
+    )
+
     return "Fetching Schedule"
 
 
