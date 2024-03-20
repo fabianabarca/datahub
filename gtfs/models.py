@@ -49,13 +49,13 @@ class Company(models.Model):
 
 
 class Feed(models.Model):
-    feed_id = models.CharField(max_length=100, primary_key=True)
+    feed_id = models.CharField(max_length=100, primary_key=True, unique=True)
     company = models.ForeignKey(
         Company, on_delete=models.SET_NULL, blank=True, null=True
     )
     http_etag = models.CharField(max_length=1023, blank=True, null=True)
+    http_last_modified = models.DateTimeField(blank=True, null=True)
     is_current = models.BooleanField(blank=True, null=True)
-    last_modified = models.DateTimeField(blank=True, null=True)
     retrieved_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -68,7 +68,7 @@ class Agency(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, to_field="feed_id", on_delete=models.CASCADE)
     agency_id = models.CharField(
         max_length=255,
         blank=True,
