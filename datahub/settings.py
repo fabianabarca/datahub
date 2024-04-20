@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "website.apps.WebsiteConfig",
     "gtfs.apps.GtfsConfig",
     "realtime.apps.RealtimeConfig",
-    "screens.apps.ScreensConfig",
+    "alerts.apps.AlertsConfig",
     "django_celery_results",
     "django_celery_beat",
     "django.contrib.admin",
