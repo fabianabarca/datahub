@@ -3,9 +3,9 @@ import os
 from celery import Celery
 
 # Set the default Django settings module for the 'celery' program.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gtfs2screens.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "datahub.settings")
 
-app = Celery("gtfs2screens")
+app = Celery("datahub")
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

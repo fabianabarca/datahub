@@ -30,7 +30,7 @@ def get_schedule():
     system = "postgresql" # config.get("database", "system")
     host = "localhost" # config.get("database", "host")
     port = 5432 # config.get("database", "port")
-    name = "gtfs2screens" # config.get("database", "name")
+    name = "datahub" # config.get("database", "name")
     user = "fabian" # config.get("database", "user")
     password = "" # config.get("database", "password")
 
