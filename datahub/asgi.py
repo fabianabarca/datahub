@@ -1,5 +1,5 @@
 """
-ASGI config for gtfs2screens project.
+ASGI config for datahub project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -12,9 +12,9 @@ import os
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 
-from screens.routing import websocket_urlpatterns
+from alerts.routing import websocket_urlpatterns
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gtfs2screens.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "datahub.settings")
 
 application = ProtocolTypeRouter(
     {

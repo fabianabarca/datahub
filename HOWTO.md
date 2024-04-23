@@ -55,19 +55,19 @@ postgres=# ALTER ROLE user_name LOGIN;
 Ahora podemos crear una base de datos, para este proyecto:
 
 ```bash
-createdb gtfs2screens
+createdb datahub
 ```
 
 ahora hay que ingresar a esa base de datos:
 
 ```bash
-psql gtfs2screens
+psql datahub
 ```
 
 y ahí crear la extensión de PostGIS con:
 
 ```bash
-gtfs2screens=# CREATE EXTENSION postgis;
+datahub=# CREATE EXTENSION postgis;
 ```
 
 Con esto quedaría lista la base de datos para conectarnos desde Django.
@@ -89,7 +89,7 @@ y probar con `celery --version`.
 Ejecutar Celery con:
 
 ```bash
-celery -A gtfs2screens worker --loglevel=info
+celery -A datahub worker --loglevel=info
 ```
 
 ### Celery Beat
@@ -97,7 +97,7 @@ celery -A gtfs2screens worker --loglevel=info
 Celery utiliza los paquetes de integración con Django `django-celery-results` y `django-celery-beat`, y el intermediador de mensajes Redis.
 
 ```bash
-celery -A gtfs2screens beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --loglevel=info
+celery -A datahub beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --loglevel=info
 ```
 
 ## Redis

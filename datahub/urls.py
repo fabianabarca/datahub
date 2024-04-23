@@ -1,5 +1,5 @@
 """
-URL configuration for gtfs2screens project.
+URL configuration for datahub project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -22,5 +22,5 @@ urlpatterns = [
     path("", include("website.urls"), name="index"),
     path("gtfs/", include("gtfs.urls"), name="gtfs_page"),
     path("realtime/", include("realtime.urls"), name="realtime_page"),
-    path("pantallas/", include("screens.urls"), name="screens_page"),
+    path("pantallas/", include("alerts.urls"), name="alerts_page"),
 ]
