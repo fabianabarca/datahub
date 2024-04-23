@@ -12,3 +12,6 @@ schedule
 pandas
 gtfs-realtime-bindings
 python-decouple
+psycopg2-binary
+sqlalchemy
+gunicorn
