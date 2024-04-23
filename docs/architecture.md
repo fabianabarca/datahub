@@ -22,7 +22,7 @@
 - `class User`: Información de usuarios del sistema
   - `type`
 
-### Django app: `screens`
+### Django app: `alerts`
 
 > Páginas de administración de las pantallas (HTML) y actualización de datos en tiempo real (WebSockets)
 

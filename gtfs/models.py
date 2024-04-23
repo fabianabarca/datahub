@@ -3,7 +3,7 @@ from django.contrib.gis.geos import Point
 
 from django.db.models.signals import post_save
 
-from screens.multicast import test_signal
+from alerts.multicast import test_signal
 
 
 class Company(models.Model):
