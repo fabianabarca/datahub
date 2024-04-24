@@ -183,9 +183,7 @@ class Route(models.Model):
     route_id = models.CharField(
         max_length=255, help_text="Identificador único de la ruta."
     )
-    agency_id = models.ForeignKey(
-        Agency, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    agency_id = models.CharField(max_length=200)
     route_short_name = models.CharField(
         max_length=63, blank=True, null=True, help_text="Nombre corto de la ruta."
     )
@@ -330,8 +328,8 @@ class Trip(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    route_id = models.ForeignKey(Route, on_delete=models.CASCADE)
-    service_id = models.ForeignKey(Calendar, on_delete=models.CASCADE)
+    route_id = models.CharField(max_length=200)
+    service_id = models.CharField(max_length=200)
     trip_id = models.CharField(
         max_length=255, help_text="Identificador único del viaje."
     )
@@ -349,9 +347,7 @@ class Trip(models.Model):
         max_length=255, blank=True, null=True, help_text="Identificador del bloque."
     )
     shape_id = models.CharField(max_length=255, blank=True, null=True)
-    geoshape_id = models.ForeignKey(
-        GeoShape, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    geoshape_id = models.CharField(max_length=200)
     wheelchair_accessible = models.PositiveSmallIntegerField(
         choices=((0, "No especificado"), (1, "Accesible"), (2, "No accesible")),
         help_text="¿Tiene acceso para sillas de ruedas?",
@@ -372,14 +368,14 @@ class StopTime(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    trip_id = models.ForeignKey(Trip, on_delete=models.CASCADE)
+    trip_id = models.CharField(max_length=200)
     arrival_time = models.TimeField(
         help_text="Hora de llegada a la parada.", blank=True, null=True
     )
     departure_time = models.TimeField(
         help_text="Hora de salida de la parada.", blank=True, null=True
     )
-    stop_id = models.ForeignKey(Stop, on_delete=models.CASCADE)
+    stop_id = models.CharField(max_length=200)
     stop_sequence = models.PositiveIntegerField(
         help_text="Secuencia de la parada en el viaje."
     )
@@ -484,8 +480,8 @@ class FareRule(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    fare_id = models.ForeignKey(FareAttribute, on_delete=models.CASCADE)
-    route_id = models.ForeignKey(Route, on_delete=models.CASCADE)
+    fare_id = models.CharField(max_length=200)
+    route_id = models.CharField(max_length=200)
     origin_id = models.CharField(max_length=255, blank=True, null=True)
     destination_id = models.CharField(max_length=255, blank=True, null=True)
     contains_id = models.CharField(max_length=255, blank=True, null=True)
