@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     "feed.apps.FeedConfig",
     "alerts.apps.AlertsConfig",
     "api.apps.ApiConfig",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "drf_spectacular",
     "django_celery_results",
     "django_celery_beat",
     "django.contrib.admin",
@@ -139,6 +142,14 @@ CHANNEL_LAYERS = {
             "hosts": [(REDIS_HOST, REDIS_PORT)],
         },
     },
+}
+
+# REST Framework settings
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
 }
 
 # Internationalization
