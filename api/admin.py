@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Application
+from feed.models import Application
 
 # Register your models here.
 
