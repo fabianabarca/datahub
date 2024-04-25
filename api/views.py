@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.http import FileResponse
 from feed.models import Application
-from rest_framework import viewsets, permissions, authentication
+from rest_framework import viewsets, authentication
 
 from .serializers import ApplicationSerializer
 
@@ -13,7 +13,6 @@ class ApplicationViewSet(viewsets.ModelViewSet):
 
     queryset = Application.objects.all().order_by("created_at")
     serializer_class = ApplicationSerializer
-    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [authentication.TokenAuthentication]
 
 
