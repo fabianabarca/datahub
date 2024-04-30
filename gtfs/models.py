@@ -6,13 +6,13 @@ from django.db.models.signals import post_save
 from alerts.multicast import test_signal
 
 
-class Company(models.Model):
-    """A company provides transportation services GTFS data.
+class Provider(models.Model):
+    """A provider provides transportation services GTFS data.
 
-    It might or might not be the same as the agency in the GTFS feed. A company can have multiple agencies.
+    It might or might not be the same as the agency in the GTFS feed. A provider can have multiple agencies.
     """
 
-    company_id = models.BigAutoField(primary_key=True)
+    provider_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255, help_text="Nombre de la empresa.")
     description = models.TextField(
         blank=True, null=True, help_text="Descripción de la institución o empresa."
@@ -50,12 +50,12 @@ class Company(models.Model):
 
 class Feed(models.Model):
     feed_id = models.CharField(max_length=100, primary_key=True)
-    company = models.ForeignKey(
-        Company, on_delete=models.SET_NULL, blank=True, null=True
+    provider = models.ForeignKey(
+        Provider, on_delete=models.SET_NULL, blank=True, null=True
     )
     http_etag = models.CharField(max_length=1023, blank=True, null=True)
     is_current = models.BooleanField(blank=True, null=True)
-    last_modified = models.DateTimeField(blank=True, null=True)
+    http_last_modified = models.DateTimeField(blank=True, null=True)
     retrieved_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -145,8 +145,8 @@ class Stop(models.Model):
         max_length=255, blank=True, null=True, help_text="Identificador de la zona."
     )
     stop_url = models.URLField(blank=True, null=True, help_text="URL de la parada.")
-    location_type = models.PositiveSmallIntegerField(
-        blank=True, null=True, help_text="Tipo de parada."
+    location_type = models.CharField(
+        max_length=2, blank=True, null=True, help_text="Tipo de parada."
     )
     parent_station = models.CharField(
         max_length=255, blank=True, help_text="Estación principal."
@@ -154,8 +154,8 @@ class Stop(models.Model):
     stop_timezone = models.CharField(
         max_length=255, blank=True, help_text="Zona horaria de la parada."
     )
-    wheelchair_boarding = models.PositiveSmallIntegerField(
-        blank=True, null=True, help_text="Acceso para sillas de ruedas."
+    wheelchair_boarding = models.CharField(
+        max_length=2, blank=True, null=True, help_text="Acceso para sillas de ruedas."
     )
     level_id = models.CharField(
         max_length=255, blank=True, help_text="Identificador del nivel."
@@ -183,9 +183,7 @@ class Route(models.Model):
     route_id = models.CharField(
         max_length=255, help_text="Identificador único de la ruta."
     )
-    agency_id = models.ForeignKey(
-        Agency, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    agency_id = models.CharField(max_length=255, blank=True, null=True)
     route_short_name = models.CharField(
         max_length=63, blank=True, null=True, help_text="Nombre corto de la ruta."
     )
@@ -223,7 +221,7 @@ class Route(models.Model):
         null=True,
         help_text="Color del texto que representa la ruta en formato hexadecimal.",
     )
-    route_sort_order = models.PositiveSmallIntegerField(blank=True, null=True)
+    route_sort_order = models.PositiveIntegerField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.route_short_name}: {self.route_long_name}"
@@ -292,7 +290,7 @@ class Shape(models.Model):
         decimal_places=6,
         help_text="Longitud de un punto en la trayectoria.",
     )
-    shape_pt_sequence = models.PositiveSmallIntegerField(
+    shape_pt_sequence = models.PositiveIntegerField(
         help_text="Secuencia del punto en la trayectoria."
     )
     shape_dist_traveled = models.DecimalField(
@@ -330,8 +328,8 @@ class Trip(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    route_id = models.ForeignKey(Route, on_delete=models.CASCADE)
-    service_id = models.ForeignKey(Calendar, on_delete=models.CASCADE)
+    route_id = models.CharField(max_length=255, blank=True, null=True)
+    service_id = models.CharField(max_length=255, blank=True, null=True)
     trip_id = models.CharField(
         max_length=255, help_text="Identificador único del viaje."
     )
@@ -349,9 +347,7 @@ class Trip(models.Model):
         max_length=255, blank=True, null=True, help_text="Identificador del bloque."
     )
     shape_id = models.CharField(max_length=255, blank=True, null=True)
-    geoshape_id = models.ForeignKey(
-        GeoShape, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    geoshape_id = models.CharField(max_length=255, blank=True, null=True)
     wheelchair_accessible = models.PositiveSmallIntegerField(
         choices=((0, "No especificado"), (1, "Accesible"), (2, "No accesible")),
         help_text="¿Tiene acceso para sillas de ruedas?",
@@ -372,14 +368,18 @@ class StopTime(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    trip_id = models.ForeignKey(Trip, on_delete=models.CASCADE)
+    trip_id = models.CharField(max_length=255, blank=True, null=True)
     arrival_time = models.TimeField(
         help_text="Hora de llegada a la parada.", blank=True, null=True
     )
+    arrival_time_overflow = models.BooleanField(blank=True, null=True, default=False)
+    arrival_time_delta = models.DurationField(blank=True, null=True)
     departure_time = models.TimeField(
         help_text="Hora de salida de la parada.", blank=True, null=True
     )
-    stop_id = models.ForeignKey(Stop, on_delete=models.CASCADE)
+    departure_time_overflow = models.BooleanField(blank=True, null=True, default=False)
+    departure_time_delta = models.DurationField(blank=True, null=True)
+    stop_id = models.CharField(max_length=255, blank=True, null=True)
     stop_sequence = models.PositiveIntegerField(
         help_text="Secuencia de la parada en el viaje."
     )
@@ -484,8 +484,8 @@ class FareRule(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    fare_id = models.ForeignKey(FareAttribute, on_delete=models.CASCADE)
-    route_id = models.ForeignKey(Route, on_delete=models.CASCADE)
+    fare_id = models.CharField(max_length=255, blank=True, null=True)
+    route_id = models.CharField(max_length=255, blank=True, null=True)
     origin_id = models.CharField(max_length=255, blank=True, null=True)
     destination_id = models.CharField(max_length=255, blank=True, null=True)
     contains_id = models.CharField(max_length=255, blank=True, null=True)
@@ -507,8 +507,8 @@ class FeedMessage(models.Model):
     """
 
     feed_message_id = models.BigAutoField(primary_key=True)
-    company = models.ForeignKey(
-        Company, on_delete=models.SET_NULL, blank=True, null=True
+    provider = models.ForeignKey(
+        Provider, on_delete=models.SET_NULL, blank=True, null=True
     )
     timestamp = models.DateTimeField(auto_now=True)
     entity_type = models.CharField(max_length=63)
@@ -570,7 +570,7 @@ class StopTimeUpdate(models.Model):
     id = models.BigAutoField(primary_key=True)
 
     # Foreign key to TripUpdate model
-    trip_update = models.ForeignKey("TripUpdate", on_delete=models.CASCADE)
+    trip_update = models.ForeignKey(TripUpdate, on_delete=models.CASCADE)
 
     # Stop ID (string)
     stop_sequence = models.IntegerField()
@@ -607,7 +607,7 @@ class VehiclePosition(models.Model):
     entity_id = models.CharField(max_length=127)
 
     # Foreign key to FeedMessage model
-    feed_message = models.ForeignKey("FeedMessage", on_delete=models.CASCADE)
+    feed_message = models.ForeignKey(FeedMessage, on_delete=models.CASCADE)
 
     # TripDescriptor (message)
     trip_trip_id = models.CharField(max_length=255)
@@ -677,14 +677,14 @@ class Record(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     timestamp = models.DateTimeField(auto_now=True)
-    company = models.ForeignKey(
-        Company, on_delete=models.SET_NULL, blank=True, null=True
+    provider = models.ForeignKey(
+        Provider, on_delete=models.SET_NULL, blank=True, null=True
     )
     data_source = models.URLField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.feed_transit_system} ({self.timestamp})"
+        return f"{self.provider} ({self.timestamp})"
 
 
 # Django Model Signal (find a good place for this)
