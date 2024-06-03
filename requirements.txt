@@ -7,11 +7,11 @@ celery[redis]
 django-celery-results
 django-celery-beat
 requests
-configparser
-schedule
 pandas
+geopandas
 gtfs-realtime-bindings
+djangorestframework
+drf-spectacular
 python-decouple
 psycopg2-binary
-sqlalchemy
 gunicorn
