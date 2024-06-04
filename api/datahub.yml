@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
-  title: Servidor de datos
-  description: Un servidor para suplir datos a aplicaciones.
+  title: Infobús API
+  description: "Un servidor para recopilar datos desde diversas fuentes, incluyendo desde servidores en tiempo real con datos GTFS Realtime, y para distribución de información a servicios como páginas web, pantallas, aplicaciones, análisis de datos y otros.\n\n**Autores**\n\n Fabián Abarca Calderón, David Segura Cruz, Josué Vargas Céspedes \n\n *Escuela de Ingeniería Eléctrica, Universidad de Costa Rica*"
   version: '1.0'
   contact:
     email: tropicalizacion@ucr.ac.cr
@@ -12,140 +12,606 @@ info:
     name: MIT
     url: 'https://opensource.org/license/mit/'
 servers:
-  - url: https://realtime.bucr.digital/api
+  - url: https://datahub.bucr.digital/api
+
 paths:
+  /provider:
+    get:
+      summary: Proveedor de datos
+      description: Información sobre el proveedor de datos GTFS del servicio de transporte público.
+      tags:
+        - Schedule
+      responses:
+        '200':
+          description: Solicitud procesada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+  /agency:
+    get:
+      summary: Agencia operadora del servicio
+      description: Datos sobre la agencia operadora del servicio según GTFS, representada en el conjunto de datos.
+      tags:
+        - Schedule
+      responses:
+        '200':
+          description: Solicitud procesada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agency'
+  /stops:
+    get:
+      summary: Datos sobre las paradas
+      description: Paradas donde los vehículos recogen o dejan a los pasajeros. También define estaciones y entradas a las estaciones.
+      tags:
+        - Schedule
+      parameters:
+      - in: query
+        name: route_id
+        schema:
+          type: string
+        description: 'Búsqueda de paradas que pertenecen a una ruta particular.'
+      - in: query
+        name: location_type
+        schema:
+          type: integer
+          enum: [0, 1]
+        description: 'El tipo de parada, donde 0 es una parada o plataforma y 1 es una estación.'
+      - in: query
+        name: wheelchair_boarding
+        schema:
+          type: integer
+          enum: [0, 1, 2]
+        description: 'Indica si la parada permite el abordaje de sillas de ruedas, donde 0 es desconocido, 1 es accesible y 2 es no accesible.'
+      - in: query
+        name: located_in
+        schema:
+          type: string
+          example: 'POLYGON ((-85 9, -85 11, -83 11, -83 9, -85 9))'
+          format: WKT
+        description: 'Búsqueda de paradas dentro de un región, especificada como un polígono en formato WKT.'
+      - in: query
+        name: close_to
+        schema:
+          type: string
+          example: 'POINT (-84 9)'
+          format: WKT
+        description: 'Búsqueda de paradas cercanas a una ubicación de la forma longitud, latitud en formato WKT.'
+      - in: query
+        name: distance
+        schema:
+          type: integer
+          example: 400
+          default: 800
+        description: 'Distancia en metros para la búsqueda de paradas cercanas a un punto.'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stops'
+  /shapes:
+    get:
+      summary: Trayectorias de las rutas
+      description: Datos sobre las trayectorias de las rutas, como las coordenadas y las formas de las rutas.
+      tags:
+        - Schedule
+      responses:
+        '200':
+          description: OK
+  /calendar:
+    get:
+      summary: Días de operación de las rutas
+      description: Datos sobre los horarios de las rutas, como los días de la semana en que se opera y las fechas de inicio y fin de la operación.
+      tags:
+        - Schedule
+      responses:
+        '200':
+          description: OK
+  /calendar-dates:
+    get:
+      summary: Excepciones de operación de las rutas
+      description: Datos sobre las excepciones de operación de las rutas, como las fechas en que no operan o cambian de servicio.
+      tags:
+        - Schedule
+      responses:
+        '200':
+          description: OK
+  /routes:
+    get:
+      summary: Datos de las rutas
+      description: Datos sobre las rutas, como el nombre, la descripción y la URL de la ruta.
+      tags:
+        - Schedule
+      parameters:
+        - in: query
+          name: route_type
+          schema:
+            type: integer
+            enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+          description: 'Tipo de ruta, según GTFS, donde 3 es autobús.'
+      responses:
+        '200':
+          description: OK
+  /trips:  
+    get:
+      summary: Datos de los viajes
+      description: Datos sobre los viajes, como la hora de inicio, la fecha de inicio y la relación con el horario.
+      tags:
+        - Schedule
+      parameters:
+        - in: query
+          name: route_id
+          schema:
+            type: string
+            example: 'bUCR-L1'
+          description: 'Búsqueda de viajes que pertenecen a una ruta particular.'
+        - in: query
+          name: direction_id
+          schema:
+            type: integer
+            enum: [0, 1]
+          description: 'Búsqueda de viajes en una dirección particular.'
+        - in: query
+          name: service_id
+          schema:
+            type: string
+            example: 'entresemana'
+          description: 'Búsqueda de viajes en días de operación particulares.'
+        - in: query
+          name: shape_id
+          schema:
+            type: string
+            example: 'desde_educacion'
+          description: 'Búsqueda de viajes en una trayectoria particular.'
+      responses:
+        '200':
+          description: OK
+  /stop-times:
+    get:
+      summary: Horarios de llegada a las paradas
+      description: Datos sobre los horarios de las paradas, como la hora de llegada y salida, y la secuencia de la parada.
+      tags:
+        - Schedule
+      parameters:
+        - in: query
+          name: trip_id
+          schema:
+            type: string
+            example: 'JFH367'
+          description: 'Búsqueda de horarios de paradas en un viaje particular.'
+        - in: query
+          name: stop_id
+          schema:
+            type: string
+            example: 'bUCR-0-03'
+          description: 'Búsqueda de horarios de paradas en una parada particular.'
+      responses:
+        '200':
+          description: OK
+  /frequencies:
+    get:
+      summary: Frecuencias de los viajes
+      description: Datos sobre las frecuencias de los viajes, como la hora de inicio, la hora de fin y la frecuencia.
+      tags:
+        - Schedule
+      parameters:
+        - in: query
+          name: trip_id
+          schema:
+            type: string
+            example: 'JFH367'
+          description: 'Búsqueda de frecuencias de viajes en un viaje particular.'
+      responses:
+        '200':
+          description: OK
+  /feed-info:
+    get:
+      summary: Información del feed
+      description: Datos sobre el feed de datos, como la versión, la URL y la fecha de inicio y fin de la operación.
+      tags:
+        - Schedule
+      responses:
+        '200':
+          description: OK
+  /route-stops:
+    get:
+      summary: Paradas de las rutas
+      description: Datos sobre las paradas de las rutas según su trayectoria, con la secuencia de paradas y distancia recorrida. Esto no es parte de GTFS Schedule.
+      tags:
+        - Schedule
+      parameters:
+        - in: query
+          name: route_id
+          schema:
+            type: string
+            example: 'bUCR-L1'
+          description: 'Búsqueda de paradas en una ruta particular.'
+      responses:
+        '200':
+          description: OK
+  /geoshapes:
+    get:
+      summary: Trayectorias de las rutas en formato GeoJSON
+      description: Datos sobre las trayectorias de las rutas en formato GeoJSON. Esto no es parte de GTFS Schedule.
+      tags:
+        - Schedule
+      parameters:
+        - in: query
+          name: shape_id
+          schema:
+            type: string
+            example: 'desde_educacion'
+          description: 'Búsqueda de una trayectoria particular.'
+      responses:
+        '200':
+          description: OK
+  /trip-times:
+    get:
+      summary: Horarios de salida los viajes
+      description: Datos sobre los horarios de salida de los viajes, como la hora de inicio y fin, y la duración del viaje. Esto no es parte de GTFS Schedule, y es complementario a stop_times.
+      tags:
+        - Schedule
+      parameters:
+        - in: query
+          name: trip_id
+          schema:
+            type: string
+            example: 'JFH367'
+          description: 'Búsqueda de horarios de un viaje particular.'
+      responses:
+        '200':
+          description: OK
   /vehicle-positions:
     get:
-      description: GTFS Realtime VehiclePositions
+      summary: Posiciones de los vehículos
+      description: Datos sobre las posiciones de los vehículos, como la ubicación, la velocidad y la dirección.
       tags:
-        - GTFS
+        - Realtime
       responses:
         '200':
           description: OK
   /trip-updates:
     get:
-      description: GTFS Realtime TripUpdates
+      summary: Actualizaciones de los viajes
+      description: Obtiene las horas de llegada y salida de las paradas en tiempo real.
       tags:
-        - GTFS
+        - Realtime
       responses:
         '200':
           description: OK
   /service-alerts:
     get:
-      description: GTFS Realtime Alerts
+      summary: Alertas del servicio
+      description: Obtiene alertas que modifican el servicio en tiempo real.
       tags:
-        - GTFS
+        - Realtime
       responses:
         '200':
           description: OK
-  /equipment:
+  /weather:
     get:
+      summary: Datos meteorológicos
+      description: Obtiene datos meteorológicos en tiempo real
       tags:
-        - Vehicle
+        - External
       responses:
         '200':
           description: OK
-  /alarms:
+  /social:
     get:
+      summary: Redes sociales
+      description: Obtiene datos de las redes sociales de la agencia operadora del servicio y de las personas usuarias.
       tags:
-        - Alarms
+        - External
       responses:
         '200':
           description: OK
-  /authorizations:
+  /user-reports:
     get:
+      summary: Reportes de personas usuarias
+      description: Obtiene reportes de personas usuarias sobre el servicio.
       tags:
-        - Authorizations
+        - External
       responses:
         '200':
           description: OK
-  /fares:
-    get:
-      tags:
-        - Users
-      responses:
-        '200':
-          description: OK
-  /transfers:
-    get:
-      tags:
-        - Users
-      responses:
-        '200':
-          description: OK
-  /travelers:
-    get:
-      tags:
-        - Users
-      responses:
-        '200':
-          description: OK
-  /users:
-    get:
-      tags:
-        - Users
-      responses:
-        '200':
-          description: OK
-  /conditions:
-    get:
-      tags:
-        - Vehicle
-      responses:
-        '200':
-          description: OK
-  /emissions:
-    get:
-      tags:
-        - Vehicle
-      responses:
-        '200':
-          description: OK
-  /loading:
-    get:
-      tags:
-        - Trip
-      responses:
-        '200':
-          description: OK
-  /location:
     post:
+      summary: Reportes de personas usuarias
+      description: Publica reportes de personas usuarias sobre el servicio.
       tags:
-        - Trip
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Location'
+        - External
       responses:
         '200':
           description: OK
-  /schedule:  
+  /user-data:
     get:
+      summary: Datos de personas usuarias
+      description: Obtiene datos de personas usuarias del servicio.
       tags:
-        - Trip
+        - External
       responses:
         '200':
           description: OK
-  /operator:
+    post:
+      summary: Datos de personas usuarias
+      description: Publica datos de personas usuarias del servicio.
+      tags:
+        - External
+      responses:
+        '200':
+          description: OK
+  /wide-alerts:
     get:
+      summary: Alertas generales
+      description: Obtiene alertas generales a nivel de país que pueden afectar el servicio o que son información pública relevante.
       tags:
-        - Trip 
+        - External
       responses:
         '200':
           description: OK
+    post:
+      summary: Alertas generales
+      description: Publica alertas generales del servicio
+      tags:
+        - External
+      responses:
+        '200':
+          description: OK
+
 components:
   schemas:
-    Location:
+    Provider:
       type: object
       properties:
-        latitude:
+        provider_id:
+          description: Identificador del proveedor de datos
+          type: string
+          example: 'bUCR'
+        provider_name:
+          description: Nombre del proveedor de datos
+          type: string
+          example: 'bUCR'
+        provider_url:
+          description: URL del proveedor de datos
+          type: string
+          example: 'https://bucr.digital'
+        provider_email:
+          description: Correo electrónico del proveedor de datos
+          type: string
+          example: 'email@ejemplo.com'
+    Agency:
+      type: object
+      properties:
+        agency_id:
+          description: Identificador de la agencia según GTFS Schedule
+          type: string
+          example: 'bUCR'
+        agency_name:
+          description: Nombre de la agencia
+          type: string
+          example: 'bUCR'
+        agency_url:
+          description: URL de la agencia
+          type: string
+          example: 'https://bucr.digital'
+        agency_timezone:
+          description: Zona horaria de la agencia
+          type: string
+          example: 'America/Costa_Rica'
+        agency_lang:
+          description: Lenguaje de la agencia
+          type: string
+          example: 'es'
+        agency_phone:
+          description: Teléfono de la agencia
+          type: string
+          example: '+506 2511-0000'
+        agency_fare_url:
+          description: URL de tarifas de la agencia
+          type: string
+          example: 'https://bucr.digital/tarifas'
+        agency_email:
+          description: Correo electrónico de la agencia
+          type: string
+          example: 'bus@ucr.ac.cr'
+    Stops:
+      type: object
+      properties:
+        stop_id:
+          description: Identificador de la parada
+          type: string
+          example: 'bUCR-0-03'
+        stop_name:
+          description: Nombre de la parada
+          type: string
+          example: 'Facultad de Ingeniería'
+        stop_desc:
+          description: Descripción de la parada
+          type: string
+          example: 'Facultad de Ingeniería en la Ciudad de la Investigación de la Universidad de Costa Rica'
+        stop_lat:
+          description: Latitud de la parada
           type: number
           format: float
-        longitude:
+          example: 9.937
+        stop_lon:
+          description: Longitud de la parada
           type: number
           format: float
-        altitude:
+          example: -84.051
+        stop_url:
+          description: URL de la parada
+          type: string
+          example: 'https://bucr.digital/paradas/bUCR-0-03'
+        location_type:
+          description: Tipo de ubicación
+          type: integer
+          enum: [0, 1]
+          example: 0
+        wheelchair_boarding:
+          description: Accesibilidad para sillas de ruedas
+          type: integer
+          enum: [0, 1, 2]
+          example: 1
+    Trip:
+      type: object
+      properties:
+        trip_id:
+          description: Identificador del viaje según GTFS Schedule
+          type: string
+          example: 'JFH367'
+        route_id:
+          description: Identificador de la ruta según GTFS Schedule
+          type: string
+          example: 'bUCR-L1'
+        direction_id:
+          description: Identificador de la dirección del viaje según GTFS Schedule
+          type: integer
+          example: 0
+        start_time:
+          description: Hora de inicio del viaje
+          type: string
+          example: '07:15:00'
+        start_date:
+          description: Fecha de inicio del viaje
+          type: string
+          example: '2024-05-03'
+        schedule_relationship:
+          description: Relación con el horario
+          type: string
+          enum: ['SCHEDULED', 'ADDED', 'UNSCHEDULED', 'CANCELED', 'DUPLICATED', 'DELETED']
+    Vehicle:
+      type: object
+      properties:
+        id:
+          description: Identificador del vehículo
+          type: string
+          example: 'MEYS-8236'
+        label:
+          description: Etiqueta del vehículo
+          type: string
+          example: 'MEYS-8236'
+        license_plate:
+          description: Placa del vehículo
+          type: string
+          example: 'SJB 9876'
+        wheelchair_accessible:
+          description: Accesibilidad para sillas de ruedas
+          type: string
+          enum: ['NO_VALUE', 'UNKNOWN', 'WHEELCHAIR_ACCESSIBLE', 'WHEELCHAIR_INACCESSIBLE']
+    Schedule:
+      type: object
+      properties:
+        current_stop_sequence:
+          description: Secuencia de la parada
+          type: integer
+          example: 15
+        stop_id:
+          description: Identificador de la parada
+          type: string
+          example: 'bUCR-0-03'
+        current_status:
+          description: Estado actual del vehículo
+          type: string
+          enum: ['INCOMING_AT', 'STOPPED_AT', 'IN_TRANSIT_TO']
+          example: 'STOPPED_AT'
+        congestion_level:
+          description: Nivel de congestión vehicular en la vía
+          type: string
+          enum: ['UNKNOWN_CONGESTION_LEVEL', 'RUNNING_SMOOTHLY', 'STOP_AND_GO', 'CONGESTION', 'SEVERE_CONGESTION']
+          example: 'SEVERE_CONGESTION'
+    Loading:
+      type: object
+      properties:
+        occupancy_status:
+          description: Estado de la ocupación de la parada
+          type: string
+          enum: ['EMPTY', 'MANY_SEATS_AVAILABLE', 'FEW_SEATS_AVAILABLE', 'STANDING_ROOM_ONLY', 'CRUSHED_STANDING_ROOM_ONLY', 'FULL', 'NOT_ACCEPTING_PASSENGERS', 'NO_DATA_AVAILABLE', 'NOT_BOARDABLE']
+          example: 'CRUSHED_STANDING_ROOM_ONLY'
+        occupancy_percentage:
+          description: Porcentaje de ocupación del vehículo según capacidad de carga
+          type: integer
+          example: 95
+    Equipment:
+      type: object
+      properties:
+        serial_number:
+          description: Número de serie del equipo
+          type: string
+          example: 'MEYS-8236'
+        brand:
+          description: Marca del equipo
+          type: string
+          example: 'MEYS'
+        model:
+          description: Modelo del equipo
+          type: string
+          example: 'MEYS-8236'
+        software_version:
+          description: Versión del software del equipo
+          type: string
+          example: '1.0.0'
+        owner:
+          description: Propietario del equipo
+          type: string
+          example: 'bUCR'
+    Weather:
+      type: object
+      properties:
+        temperature:
+          description: Temperatura del ambiente
           type: number
           format: float
+          example: 25.5
+        humidity:
+          description: Humedad del ambiente
+          type: number
+          format: float
+          example: 0.75
+        pressure:
+          description: Presión atmosférica
+          type: number
+          format: float
+          example: 1013.25
+        wind_speed:
+          description: Velocidad del viento
+          type: number
+          format: float
+          example: 12.5
+        wind_direction:
+          description: Dirección del viento, donde el norte es 0 grados
+          type: number
+          format: float
+          example: 135
+        precipitation:
+          description: Precipitación (mm)
+          type: number
+          format: float
+          example: 0.5
+        rainfall:
+          description: Descripción de intensidad de lluvia
+          type: number
+          enum: ['NO_RAIN', 'DRIZZLE', 'LIGHT_RAIN', 'HEAVY_RAIN']
+          example: 'DRIZZLE'
+        visibility:
+          description: Visibilidad
+          type: number
+          format: float
+          example: 10
+
+tags:
+  - name: Schedule
+    x-displayName: Sobre el servicio
+    description: Datos sobre el servicio, como el operador, las paradas, las tarifas y otros.
+  - name: Realtime
+    x-displayName: En tiempo real
+    description: Datos sobre el viaje actual del vehículo.
+  - name: External
+    x-displayName: Datos complementarios
+    description: Información sobre las personas usuarias del sistema
