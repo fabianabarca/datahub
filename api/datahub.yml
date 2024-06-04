@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
-  title: Servidor de datos
-  description: Un concentrador de datos de transporte público para aplicaciones.
+  title: Infobús API
+  description: "Un servidor para recopilar datos desde diversas fuentes, incluyendo desde servidores en tiempo real con datos GTFS Realtime, y para distribución de información a servicios como páginas web, pantallas, aplicaciones, análisis de datos y otros.\n\n**Autores**\n\n Fabián Abarca Calderón, David Segura Cruz, Josué Vargas Céspedes \n\n *Escuela de Ingeniería Eléctrica, Universidad de Costa Rica*"
   version: '1.0'
   contact:
     email: tropicalizacion@ucr.ac.cr
@@ -18,7 +18,7 @@ paths:
   /provider:
     get:
       summary: Proveedor de datos
-      description: Información sobre el proveedor de datos del servicio de transporte público.
+      description: Información sobre el proveedor de datos GTFS del servicio de transporte público.
       tags:
         - Schedule
       responses:
@@ -31,7 +31,7 @@ paths:
   /agency:
     get:
       summary: Agencia operadora del servicio
-      description: Datos sobre la agencia operadora del servicio, según GTFS, agencias de tránsito con servicio representado en este conjunto de datos.
+      description: Datos sobre la agencia operadora del servicio según GTFS, representada en el conjunto de datos.
       tags:
         - Schedule
       responses:
@@ -69,23 +69,23 @@ paths:
         name: located_in
         schema:
           type: string
-          example: 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))'
+          example: 'POLYGON ((-85 9, -85 11, -83 11, -83 9, -85 9))'
           format: WKT
-        description: 'Búsqueda de paradas dentro de un región.'
+        description: 'Búsqueda de paradas dentro de un región, especificada como un polígono en formato WKT.'
       - in: query
         name: close_to
         schema:
           type: string
           example: 'POINT (-84 9)'
           format: WKT
-        description: 'Búsqueda de paradas cercanas a una ubicación de la forma longitud, latitud en WKT.'
+        description: 'Búsqueda de paradas cercanas a una ubicación de la forma longitud, latitud en formato WKT.'
       - in: query
         name: distance
         schema:
           type: integer
           example: 400
           default: 800
-        description: 'Distancia en metros para la búsqueda de paradas cercanas.'
+        description: 'Distancia en metros para la búsqueda de paradas cercanas a un punto.'
       responses:
         '200':
           description: OK
