@@ -9,11 +9,11 @@ django-celery-beat
 djangorestframework
 drf-spectacular
 requests
-configparser
-schedule
 pandas
+geopandas
 gtfs-realtime-bindings
+djangorestframework
+drf-spectacular
 python-decouple
 psycopg2-binary
-sqlalchemy
 gunicorn
