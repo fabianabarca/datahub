@@ -153,7 +153,7 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "bUCR - Servidor de datos",
+    "TITLE": "Infobús API | bUCR",
 }
 
 
