@@ -19,6 +19,17 @@ paths:
     get:
       summary: Proveedor de datos
       description: Información sobre el proveedor de datos GTFS del servicio de transporte público.
+      parameters:
+        - in: query
+          name: provider_id
+          schema:
+            type: string
+          description: 'Búsqueda de proveedor de datos por identificador.'
+        - in: query
+          name: provider_name
+          schema:
+            type: string
+          description: 'Búsqueda de proveedor de datos por nombre.'
       tags:
         - Schedule
       responses:
@@ -32,6 +43,17 @@ paths:
     get:
       summary: Agencia operadora del servicio
       description: Datos sobre la agencia operadora del servicio según GTFS, representada en el conjunto de datos.
+      parameters:
+        - in: query
+          name: agency_id
+          schema:
+            type: string
+          description: 'Búsqueda de agencia por identificador.'
+        - in: query
+          name: agency_name
+          schema:
+            type: string
+          description: 'Búsqueda de agencia por nombre.'
       tags:
         - Schedule
       responses:
@@ -66,7 +88,7 @@ paths:
           enum: [0, 1, 2]
         description: 'Indica si la parada permite el abordaje de sillas de ruedas, donde 0 es desconocido, 1 es accesible y 2 es no accesible.'
       - in: query
-        name: located_in
+        name: located_within
         schema:
           type: string
           example: 'POLYGON ((-85 9, -85 11, -83 11, -83 9, -85 9))'
@@ -104,6 +126,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shapes'
   /calendar:
     get:
       summary: Días de operación de las rutas
@@ -424,7 +452,7 @@ components:
       type: object
       properties:
         stop_id:
-          description: Identificador de la parada
+          description: Identificador único de la parada
           type: string
           example: 'bUCR-0-03'
         stop_name:
@@ -459,6 +487,32 @@ components:
           type: integer
           enum: [0, 1, 2]
           example: 1
+    Shapes:
+      type: object
+      properties:
+        shape_id:
+          description: Identificador de la trayectoria
+          type: string
+          example: 'desde_educacion'
+        shape_pt_lat:
+          description: Latitud de la forma
+          type: number
+          format: float
+          example: 9.937
+        shape_pt_lon:
+          description: Longitud de la forma
+          type: number
+          format: float
+          example: -84.051
+        shape_pt_sequence:
+          description: Secuencia de la forma
+          type: integer
+          example: 15
+        shape_dist_traveled:
+          description: Distancia recorrida
+          type: number
+          format: float
+          example: 0.5
     Trip:
       type: object
       properties:
