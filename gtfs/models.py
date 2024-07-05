@@ -327,10 +327,13 @@ class GeoShape(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    geoshape_id = models.CharField(
+    shape_id = models.CharField(
         max_length=255, help_text="Identificador único de la trayectoria."
     )
     geoshape = models.LineStringField(help_text="Trayectoria de la ruta.")
+    has_altitude = models.BooleanField(
+        help_text="Indica si la trayectoria tiene datos de altitud", default=False
+    )
 
     def __str__(self):
         return self.geoshape_id
@@ -516,6 +519,7 @@ class FeedMessage(models.Model):
 
     This is metadata to link records of other models to a retrieved FeedMessage containing several entities, typically (necessarily, in this implementation) of a single kind.
     """
+
     ENTITY_TYPE_CHOICES = (
         ("trip_update", "TripUpdate"),
         ("vehicle", "VehiclePosition"),
