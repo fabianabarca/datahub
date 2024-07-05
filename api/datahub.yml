@@ -15,21 +15,21 @@ servers:
   - url: https://datahub.bucr.digital/api
 
 paths:
-  /provider:
+  /gtfs-providers:
     get:
-      summary: Proveedor de datos
-      description: Información sobre el proveedor de datos GTFS del servicio de transporte público.
+      summary: Proveedores de datos GTFS
+      description: Información sobre los proveedores de datos GTFS del servicio de transporte público.
       parameters:
         - in: query
           name: code
           schema:
             type: string
-          description: 'Búsqueda de proveedor de datos por código identificador.'
+          description: 'Búsqueda de proveedor de datos GTFS por código identificador.'
         - in: query
           name: name
           schema:
             type: string
-          description: 'Búsqueda de proveedor de datos por nombre.'
+          description: 'Búsqueda de proveedor de datos GTFS por nombre.'
       tags:
         - Schedule
       responses:
@@ -38,22 +38,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Provider'
-  /agency:
+                $ref: '#/components/schemas/GTFSProvider'
+  /agencies:
     get:
-      summary: Agencia operadora del servicio
-      description: Datos sobre la agencia operadora del servicio según GTFS, representada en el conjunto de datos.
+      summary: Agencias operadoras del servicio
+      description: Datos sobre las agencias operadoras del servicio según GTFS.
       parameters:
         - in: query
           name: agency_id
           schema:
             type: string
-          description: 'Búsqueda de agencia por identificador.'
+          description: 'Búsqueda de agencia operadora por identificador.'
         - in: query
           name: agency_name
           schema:
             type: string
-          description: 'Búsqueda de agencia por nombre.'
+          description: 'Búsqueda de agencia operadora por nombre.'
       tags:
         - Schedule
       responses:
@@ -361,7 +361,7 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            application/geo+json:
               schema:
                 type: array
                 items:
@@ -561,7 +561,7 @@ paths:
 
 components:
   schemas:
-    Provider:
+    GTFSProvider:
       type: object
       properties:
         code:
@@ -962,20 +962,45 @@ components:
           example: 1
     GeoShapes:
       type: object
+      required:
+        - type
+        - geometry
+        - properties
       properties:
         type:
-          description: Tipo de geometría
           type: string
-          example: 'LineString'
-        coordinates:
-          description: Coordenadas de la geometría
-          type: array
-          items:
-            type: array
-            items:
-              type: number
-              format: float
-          example: [[-84.051, 9.937], [-84.052, 9.938]]
+          enum: [Feature]
+        geometry:
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum: [LineString] 
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+                  format: float
+                minItems: 2  
+                maxItems: 3
+              minItems: 2
+              example: [[-84.051, 9.937], [-84.052, 9.938]]
+        properties:
+          type: object
+          properties:
+            shape_id:
+              description: Identificador de la trayectoria
+              type: string
+              example: 'desde_educacion'
+            has_altitude:
+              description: Indica si la trayectoria tiene datos de altitud
+              type: boolean
+              example: false
     TripTimes:
       type: object
       properties:
