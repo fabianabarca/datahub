@@ -1,19 +1,19 @@
 from django.conf import settings
 from django.http import FileResponse
-from feed.models import Application
-from gtfs.models import Provider
+from feed.models import InfoService
+from gtfs.models import GTFSProvider, Route, Trip
 from rest_framework import viewsets, permissions
 
-from .serializers import ApplicationSerializer, ProviderSerializer
+from .serializers import InfoServiceSerializer, GTFSProviderSerializer, RouteSerializer, TripSerializer
 
 
-class ApplicationViewSet(viewsets.ModelViewSet):
+class InfoServiceViewSet(viewsets.ModelViewSet):
     """
     Aplicaciones conectadas al servidor de datos.
     """
 
-    queryset = Application.objects.all().order_by("created_at")
-    serializer_class = ApplicationSerializer
+    queryset = InfoService.objects.all().order_by("created_at")
+    serializer_class = InfoServiceSerializer
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -22,8 +22,47 @@ class ProviderViewSet(viewsets.ModelViewSet):
     Proveedores de datos GTFS.
     """
 
-    queryset = Provider.objects.all()
-    serializer_class = ProviderSerializer
+    queryset = GTFSProvider.objects.all()
+    serializer_class = GTFSProviderSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+
+class RouteViewSet(viewsets.ModelViewSet):
+    """
+    Rutas de transporte público.
+    """
+
+    queryset = Route.objects.all()
+    serializer_class = RouteSerializer
+
+    def get_queryset(self):
+        queryset = Route.objects.all()
+        route_id = self.request.query_params.get("route_id")
+        if route_id is not None:
+            queryset = queryset.filter(route_id=route_id)
+        return queryset
+
+    # permission_classes = [permissions.IsAuthenticated]
+
+
+class TripViewSet(viewsets.ModelViewSet):
+    """
+    Viajes de transporte público.
+    """
+
+    queryset = Trip.objects.all()
+    serializer_class = TripSerializer
+
+    def get_queryset(self):
+        queryset = Trip.objects.all()
+        trip_id = self.request.query_params.get("trip_id")
+        route_id = self.request.query_params.get("route_id")
+        if trip_id is not None:
+            queryset = queryset.filter(trip_id=trip_id)
+        elif route_id is not None:
+            queryset = queryset.filter(route_id=route_id)
+        return queryset
+
     # permission_classes = [permissions.IsAuthenticated]
 
 

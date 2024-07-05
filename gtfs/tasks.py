@@ -103,7 +103,7 @@ def get_schedule():
 
 @shared_task
 def get_vehiclepositions():
-    providers = Provider.objects.filter(is_active=True)
+    providers = GTFSProvider.objects.filter(is_active=True)
     for provider in providers:
         vehicle_positions = gtfs_rt.FeedMessage()
         vehicle_positions_response = requests.get(provider.vehicle_positions_url)

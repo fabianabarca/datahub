@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 from alerts.multicast import test_signal
 
 
-class Provider(models.Model):
+class GTFSProvider(models.Model):
     """A provider provides transportation services GTFS data.
 
     It might or might not be the same as the agency in the GTFS feed. A provider can have multiple agencies.
@@ -65,15 +65,15 @@ class Provider(models.Model):
 class Feed(models.Model):
     feed_id = models.CharField(max_length=100, primary_key=True, unique=True)
     provider = models.ForeignKey(
-        Provider, on_delete=models.SET_NULL, blank=True, null=True
+        GTFSProvider, on_delete=models.SET_NULL, blank=True, null=True
     )
     http_etag = models.CharField(max_length=1023, blank=True, null=True)
     http_last_modified = models.DateTimeField(blank=True, null=True)
     is_current = models.BooleanField(blank=True, null=True)
-    retrieved_at = models.DateTimeField(auto_now=True)
+    retrieved_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.retrieved_at
+        return self.feed_id
 
 
 class Agency(models.Model):
@@ -524,7 +524,7 @@ class FeedMessage(models.Model):
 
     feed_message_id = models.CharField(max_length=63, primary_key=True)
     provider = models.ForeignKey(
-        Provider, on_delete=models.SET_NULL, blank=True, null=True
+        GTFSProvider, on_delete=models.SET_NULL, blank=True, null=True
     )
     entity_type = models.CharField(max_length=63, choices=ENTITY_TYPE_CHOICES)
     timestamp = models.DateTimeField(auto_now=True)
@@ -699,7 +699,7 @@ class Record(models.Model):
     id = models.BigAutoField(primary_key=True)
     timestamp = models.DateTimeField(auto_now=True)
     provider = models.ForeignKey(
-        Provider, on_delete=models.SET_NULL, blank=True, null=True
+        GTFSProvider, on_delete=models.SET_NULL, blank=True, null=True
     )
     data_source = models.URLField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)

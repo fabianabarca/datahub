@@ -1,6 +1,6 @@
 from django.contrib import admin
-from feed.models import Application
+from feed.models import InfoService
 
 # Register your models here.
 
-admin.site.register(Application)
+admin.site.register(InfoService)
