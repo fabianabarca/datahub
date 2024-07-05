@@ -17,7 +17,7 @@ class InfoServiceViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
 
 
-class ProviderViewSet(viewsets.ModelViewSet):
+class GTFSProviderViewSet(viewsets.ModelViewSet):
     """
     Proveedores de datos GTFS.
     """
