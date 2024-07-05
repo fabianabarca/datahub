@@ -138,18 +138,44 @@ paths:
       description: Datos sobre los horarios de las rutas, como los días de la semana en que se opera y las fechas de inicio y fin de la operación.
       tags:
         - Schedule
+      parameters:
+        - in: query
+          name: service_id
+          schema:
+            type: string
+            example: 'entresemana'
+          description: 'Búsqueda de días de operación en un servicio particular.'
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Calendar'
   /calendar-dates:
     get:
       summary: Excepciones de operación de las rutas
       description: Datos sobre las excepciones de operación de las rutas, como las fechas en que no operan o cambian de servicio.
       tags:
         - Schedule
+      parameters:
+        - in: query
+          name: service_id
+          schema:
+            type: string
+            example: 'entresemana'
+          description: 'Búsqueda de excepciones de operación en un servicio particular.'
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CalendarDates'
   /routes:
     get:
       summary: Datos de las rutas
@@ -166,6 +192,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Routes'
   /trips:  
     get:
       summary: Datos de los viajes
@@ -200,6 +232,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trips'
   /stop-times:
     get:
       summary: Horarios de llegada a las paradas
@@ -222,6 +260,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StopTimes'
   /frequencies:
     get:
       summary: Frecuencias de los viajes
@@ -238,6 +282,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Frequencies'
   /feed-info:
     get:
       summary: Información del feed
@@ -247,6 +297,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeedInfo'
   /route-stops:
     get:
       summary: Paradas de las rutas
@@ -263,6 +319,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RouteStops'
   /geoshapes:
     get:
       summary: Trayectorias de las rutas en formato GeoJSON
@@ -279,6 +341,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GeoShapes'
   /trip-times:
     get:
       summary: Horarios de salida los viajes
@@ -295,6 +363,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TripTimes'     
   /vehicle-positions:
     get:
       summary: Posiciones de los vehículos
@@ -304,6 +378,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VehiclePositions'
   /trip-updates:
     get:
       summary: Actualizaciones de los viajes
@@ -313,6 +393,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TripUpdates'
   /service-alerts:
     get:
       summary: Alertas del servicio
@@ -322,6 +408,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceAlerts'
   /weather:
     get:
       summary: Datos meteorológicos
@@ -331,6 +423,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Weather'
   /social:
     get:
       summary: Redes sociales
@@ -340,6 +438,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Social'
   /user-reports:
     get:
       summary: Reportes de personas usuarias
@@ -349,6 +453,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserReports'
     post:
       summary: Reportes de personas usuarias
       description: Publica reportes de personas usuarias sobre el servicio.
@@ -366,6 +476,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserData'
     post:
       summary: Datos de personas usuarias
       description: Publica datos de personas usuarias del servicio.
@@ -391,6 +507,12 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WideAlerts'
 
 components:
   schemas:
@@ -513,7 +635,101 @@ components:
           type: number
           format: float
           example: 0.5
-    Trip:
+    Calendar:
+      type: object
+      properties:
+        service_id:
+          description: Identificador del servicio
+          type: string
+          example: 'entresemana'
+        monday:
+          description: Operación los lunes
+          type: integer
+          enum: [0, 1]
+          example: 1
+        tuesday:
+          description: Operación los martes
+          type: integer
+          enum: [0, 1]
+          example: 1
+        wednesday:
+          description: Operación los miércoles
+          type: integer
+          enum: [0, 1]
+          example: 1
+        thursday:
+          description: Operación los jueves
+          type: integer
+          enum: [0, 1]
+          example: 1
+        friday:
+          description: Operación los viernes
+          type: integer
+          enum: [0, 1]
+          example: 1
+        saturday:
+          description: Operación los sábados
+          type: integer
+          enum: [0, 1]
+          example: 0
+        sunday:
+          description: Operación los domingos
+          type: integer
+          enum: [0, 1]
+          example: 0
+        start_date:
+          description: Fecha de inicio de operación
+          type: string
+          example: '2024-05-03'
+        end_date:
+          description: Fecha de fin de operación
+          type: string
+          example: '2024-12-31'
+    CalendarDates:
+      type: object
+      properties:
+        service_id:
+          description: Identificador del servicio
+          type: string
+          example: 'entresemana'
+        date:
+          description: Fecha de excepción
+          type: string
+          example: '2024-05-03'
+        exception_type:
+          description: Tipo de excepción
+          type: integer
+          enum: [1, 2]
+          example: 1
+    Routes:
+      type: object
+      properties:
+        route_id:
+          description: Identificador de la ruta
+          type: string
+          example: 'bUCR-L1'
+        route_short_name:
+          description: Nombre corto de la ruta
+          type: string
+          example: 'L1'
+        route_long_name:
+          description: Nombre largo de la ruta
+          type: string
+          example: 'Línea 1'
+        route_desc:
+          description: Descripción de la ruta
+          type: string
+          example: 'Línea 1 de buses de la Universidad de Costa Rica'
+        route_type:
+          description: Tipo de ruta
+          type: integer
+          enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+          example: 3
+        route_url:
+          description: URL de la ruta
+          type: string
+          example: 'https://bucr.digital/rutas/bUCR-L1'
+    Trips:
       type: object
       properties:
         trip_id:
@@ -540,6 +756,230 @@ components:
           description: Relación con el horario
           type: string
           enum: ['SCHEDULED', 'ADDED', 'UNSCHEDULED', 'CANCELED', 'DUPLICATED', 'DELETED']
+    StopTimes:
+      type: object
+      properties:
+        trip_id:
+          description: Identificador del viaje según GTFS Schedule
+          type: string
+          example: 'JFH367'
+        arrival_time:
+          description: Hora de llegada a la parada
+          type: string
+          example: '07:15:00'
+        departure_time:
+          description: Hora de salida de la parada
+          type: string
+          example: '07:15:00'
+        stop_id:
+          description: Identificador de la parada según GTFS Schedule
+          type: string
+          example: 'bUCR-0-03'
+        stop_sequence:
+          description: Secuencia de la parada
+          type: integer
+          example: 15
+        stop_headsign:
+          description: Letrero de la parada
+          type: string
+          example: 'Facultad de Ingeniería'
+        pickup_type:
+          description: Tipo de abordaje
+          type: integer
+          enum: [0, 1, 2, 3]
+          example: 0
+        drop_off_type:
+          description: Tipo de descenso
+          type: integer
+          enum: [0, 1, 2, 3]
+          example: 0
+        shape_dist_traveled:
+          description: Distancia recorrida
+          type: number
+          format: float
+          example: 0.5
+    Frequencies:
+      type: object
+      properties:
+        trip_id:
+          description: Identificador del viaje según GTFS Schedule
+          type: string
+          example: 'JFH367'
+        start_time:
+          description: Hora de inicio de la frecuencia
+          type: string
+          example: '07:15:00'
+        end_time:
+          description: Hora de fin de la frecuencia
+          type: string
+          example: '07:15:00'
+        headway_secs:
+          description: Intervalo de tiempo entre viajes
+          type: integer
+          example: 600
+    FeedInfo:
+      type: object
+      properties:
+        feed_publisher_name:
+          description: Nombre del proveedor de datos
+          type: string
+          example: 'bUCR'
+        feed_publisher_url:
+          description: URL del proveedor de datos
+          type: string
+          example: 'https://bucr.digital'
+        feed_lang:
+          description: Lenguaje del feed
+          type: string
+          example: 'es'
+        feed_start_date:
+          description: Fecha de inicio del feed
+          type: string
+          example: '2024-05-03'
+        feed_end_date:
+          description: Fecha de fin del feed
+          type: string
+          example: '2024-12-31'
+        feed_version:
+          description: Versión del feed
+          type: string
+          example: '1.0.0'
+    RouteStops:
+      type: object
+      properties:
+        route_id:
+          description: Identificador de la ruta
+          type: string
+          example: 'bUCR-L1'
+        stop_sequence:
+          description: Secuencia de la parada
+          type: integer
+          example: 15
+        stop_id:
+          description: Identificador de la parada
+          type: string
+          example: 'bUCR-0-03'
+        stop_name:
+          description: Nombre de la parada
+          type: string
+          example: 'Facultad de Ingeniería'
+        stop_lat:
+          description: Latitud de la parada
+          type: number
+          format: float
+          example: 9.937
+        stop_lon:
+          description: Longitud de la parada
+          type: number
+          format: float
+          example: -84.051
+        stop_url:
+          description: URL de la parada
+          type: string
+          example: 'https://bucr.digital/paradas/bUCR-0-03'
+        location_type:
+          description: Tipo de ubicación
+          type: integer
+          enum: [0, 1]
+          example: 0
+        wheelchair_boarding:
+          description: Accesibilidad para sillas de ruedas
+          type: integer
+          enum: [0, 1, 2]
+          example: 1
+    GeoShapes:
+      type: object
+      properties:
+        type:
+          description: Tipo de geometría
+          type: string
+          example: 'LineString'
+        coordinates:
+          description: Coordenadas de la geometría
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+              format: float
+          example: [[-84.051, 9.937], [-84.052, 9.938]]
+    TripTimes:
+      type: object
+      properties:
+        trip_id:
+          description: Identificador del viaje según GTFS Schedule
+          type: string
+          example: 'JFH367'
+        start_time:
+          description: Hora de inicio del viaje
+          type: string
+          example: '07:15:00'
+        end_time:
+          description: Hora de fin del viaje
+          type: string
+          example: '07:15:00'
+        duration:
+          description: Duración del viaje
+          type: integer
+          example: 3600
+    VehiclePositions:
+      type: object
+      properties:
+        vehicle:
+          $ref: '#/components/schemas/Vehicle'
+        schedule:
+          $ref: '#/components/schemas/Schedule'
+        loading:
+          $ref: '#/components/schemas/Loading'
+        equipment:
+          $ref: '#/components/schemas/Equipment'
+    TripUpdates:
+      type: object
+      properties:
+        trip_id:
+          description: Identificador del viaje según GTFS Schedule
+          type: string
+          example: 'JFH367'
+        stop_time_update:
+          type: array
+          items:
+            type: object
+            properties:
+              stop_id:
+                description: Identificador de la parada según GTFS Schedule
+                type: string
+                example: 'bUCR-0-03'
+              arrival:
+                description: Hora de llegada a la parada
+                type: string
+                example: '07:15:00'
+              departure:
+                description: Hora de salida de la parada
+                type: string
+                example: '07:15:00'
+              schedule_relationship:
+                description: Relación con el horario
+                type: string
+                enum: ['SCHEDULED', 'ADDED', 'UNSCHEDULED', 'CANCELED', 'DUPLICATED', 'DELETED']
+    ServiceAlerts:
+      type: object
+      properties:
+        alert_id:
+          description: Identificador de la alerta
+          type: string
+          example: 'bUCR-001'
+        alert_header:
+          description: Encabezado de la alerta
+          type: string
+          example: 'Cierre de vías'
+        alert_description:
+          description: Descripción de la alerta
+          type: string
+          example: 'Cierre de vías en la Ciudad de la Investigación'
+        alert_url:
+          description: URL de la alerta
+          type: string
+          example: 'https://bucr.digital/alertas/bUCR-001'
     Vehicle:
       type: object
       properties:
@@ -658,6 +1098,74 @@ components:
           type: number
           format: float
           example: 10
+    Social:
+      type: object
+      properties:
+        facebook:
+          description: URL de la página de Facebook
+          type: string
+          example: 'https://www.facebook.com/bUCR'
+        twitter:
+          description: URL de la cuenta de Twitter
+          type: string
+          example: 'https://twitter.com/bUCR'
+        instagram:
+          description: URL de la cuenta de Instagram
+          type: string
+          example: 'https://www.instagram.com/bUCR'
+        youtube:
+          description: URL del canal de YouTube
+          type: string
+          example: 'https://www.youtube.com/bUCR'
+    UserReports:
+      type: object
+      properties:
+        user_id:
+          description: Identificador de la persona usuaria
+          type: string
+          example: '123456'
+        user_name:
+          description: Nombre de la persona usuaria
+          type: string
+          example: 'Juan Pérez'
+        user_email:
+          description: Correo electrónico de la persona usuaria
+          type: string
+          example: 'ejemplo@ejemplo.com'
+    UserData:
+      type: object
+      properties:
+        user_id:
+          description: Identificador de la persona usuaria
+          type: string
+          example: '123456'
+        user_name:
+          description: Nombre de la persona usuaria
+          type: string
+          example: 'Juan Pérez'
+        user_email:
+          description: Correo electrónico de la persona usuaria
+          type: string
+          example: 'persona@ejemplo.com'
+    WideAlerts:
+      type: object
+      properties:
+        alert_id:
+          description: Identificador de la alerta
+          type: string
+          example: 'bUCR-001'
+        alert_header:
+          description: Encabezado de la alerta
+          type: string
+          example: 'Cierre de vías'
+        alert_description:
+          description: Descripción de la alerta
+          type: string
+          example: 'Cierre de vías en la Ciudad de la Investigación'
+        alert_url:
+          description: URL de la alerta
+          type: string
+          example: 'https://bucr.digital/alertas/bUCR-001'
 
 tags:
   - name: Schedule
