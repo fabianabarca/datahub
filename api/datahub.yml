@@ -21,12 +21,12 @@ paths:
       description: Información sobre el proveedor de datos GTFS del servicio de transporte público.
       parameters:
         - in: query
-          name: provider_id
+          name: code
           schema:
             type: string
-          description: 'Búsqueda de proveedor de datos por identificador.'
+          description: 'Búsqueda de proveedor de datos por código identificador.'
         - in: query
-          name: provider_name
+          name: name
           schema:
             type: string
           description: 'Búsqueda de proveedor de datos por nombre.'
@@ -100,7 +100,7 @@ paths:
           type: string
           example: 'POINT (-84 9)'
           format: WKT
-        description: 'Búsqueda de paradas cercanas a una ubicación de la forma longitud, latitud en formato WKT.'
+        description: 'Búsqueda de paradas cercanas a una ubicación, especificada como un punto en formato WKT.'
       - in: query
         name: distance
         schema:
@@ -121,6 +121,13 @@ paths:
     get:
       summary: Trayectorias de las rutas
       description: Datos sobre las trayectorias de las rutas, como las coordenadas y las formas de las rutas.
+      parameters:
+        - in: query
+          name: shape_id
+          schema:
+            type: string
+            example: 'desde_educacion'
+          description: 'Búsqueda de trayectorias que pertenecen a una trayectoria particular.'
       tags:
         - Schedule
       responses:
@@ -135,7 +142,7 @@ paths:
   /calendar:
     get:
       summary: Días de operación de las rutas
-      description: Datos sobre los horarios de las rutas, como los días de la semana en que se opera y las fechas de inicio y fin de la operación.
+      description: Datos sobre los los días de operación del servicio durante la semana y las fechas de inicio y fin del esquema de operación.
       tags:
         - Schedule
       parameters:
@@ -183,6 +190,12 @@ paths:
       tags:
         - Schedule
       parameters:
+        - in: query
+          name: route_id
+          schema:
+            type: string
+            example: 'bUCR-L1'
+          description: 'Búsqueda por identificador de ruta.'
         - in: query
           name: route_type
           schema:
@@ -519,22 +532,46 @@ components:
     Provider:
       type: object
       properties:
-        provider_id:
+        code:
           description: Identificador del proveedor de datos
           type: string
-          example: 'bUCR'
-        provider_name:
+          example: 'MBTA'
+        name:
           description: Nombre del proveedor de datos
           type: string
-          example: 'bUCR'
-        provider_url:
-          description: URL del proveedor de datos
+          example: 'Massachusetts Bay Transportation Authority'
+        description:
+          description: Descrippción del proveedor de datos
           type: string
-          example: 'https://bucr.digital'
-        provider_email:
-          description: Correo electrónico del proveedor de datos
+          example: 'La agencia de transporte público de Boston.'
+        website:
+          description: Sitio web del proveedor de datos
           type: string
-          example: 'email@ejemplo.com'
+          example: 'https://www.mbta.com/'
+        schedule_url:
+          description: URL del GTFS Schedule
+          type: string
+          example: 'https://cdn.mbta.com/MBTA_GTFS.zip'
+        trip_updates_url:
+          description: URL de actualizaciones de viajes
+          type: string
+          example: 'https://cdn.mbta.com/realtime/TripUpdates.pb'
+        vehicle_positions_url:
+          description: URL de posiciones de vehículos
+          type: string
+          example: 'https://cdn.mbta.com/realtime/VehiclePositions.pb'
+        service_alerts_url:
+          description: URL de alertas de servicio
+          type: string
+          example: 'https://cdn.mbta.com/realtime/Alerts.pb'
+        timezone:
+          description: Zona horaria del proveedor de datos
+          type: string
+          example: 'America/New_York'
+        is_active:
+          description: Estado de activación del proveedor de datos
+          type: boolean
+          example: true
     Agency:
       type: object
       properties:
@@ -695,12 +732,16 @@ components:
         date:
           description: Fecha de excepción
           type: string
-          example: '2024-05-03'
+          example: '2024-08-15'
         exception_type:
           description: Tipo de excepción
           type: integer
           enum: [1, 2]
           example: 1
+        holiday_name:
+          description: Nombre del feriado
+          type: string
+          example: 'Día de la Madre'
     Routes:
       type: object
       properties:
@@ -728,7 +769,7 @@ components:
         route_url:
           description: URL de la ruta
           type: string
-          example: 'https://bucr.digital/rutas/bUCR-L1'
+          example: 'https://bucr.digital/rutas/L1'
     Trips:
       type: object
       properties:
