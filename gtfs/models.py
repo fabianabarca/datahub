@@ -279,6 +279,7 @@ class CalendarDate(models.Model):
     exception_type = models.PositiveIntegerField(
         choices=((1, "Agregar"), (2, "Eliminar")), help_text="Tipo de excepción."
     )
+    holiday_name = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.service_id
