@@ -219,6 +219,12 @@ paths:
         - Schedule
       parameters:
         - in: query
+          name: trip_id
+          schema:
+            type: string
+            example: 'NROD7888'
+          description: 'Búsqueda por identificador de viaje.'
+        - in: query
           name: route_id
           schema:
             type: string
