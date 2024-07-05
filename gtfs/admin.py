@@ -4,7 +4,7 @@ from .models import *
 
 # Register your models here.
 
-admin.site.register(Provider)
+admin.site.register(GTFSProvider)
 admin.site.register(Feed)
 admin.site.register(Agency)
 admin.site.register(Stop)

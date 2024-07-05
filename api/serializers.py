@@ -1,15 +1,33 @@
-from feed.models import Application
-from gtfs.models import Provider
+from feed.models import InfoService
+from gtfs.models import GTFSProvider, Route, Trip
 from rest_framework import serializers
 
 
-class ApplicationSerializer(serializers.HyperlinkedModelSerializer):
+class GTFSProviderSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Application
-        fields = ["url", "name", "description", "created_at", "updated_at"]
+        model = GTFSProvider
+        fields = "__all__"
 
 
-class ProviderSerializer(serializers.HyperlinkedModelSerializer):
+class InfoServiceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Provider
+        model = InfoService
+        fields = "__all__"
+
+
+class RouteSerializer(serializers.HyperlinkedModelSerializer):
+
+    feed = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Route
+        fields = "__all__"
+
+
+class TripSerializer(serializers.HyperlinkedModelSerializer):
+
+    feed = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Trip
         fields = "__all__"

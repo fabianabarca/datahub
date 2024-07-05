@@ -5,8 +5,10 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
 from . import views
 
 router = routers.DefaultRouter()
-router.register(r"application", views.ApplicationViewSet)
+router.register(r"info-service", views.InfoServiceViewSet)
 router.register(r"provider", views.ProviderViewSet)
+router.register(r"routes", views.RouteViewSet)
+router.register(r"trips", views.TripViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

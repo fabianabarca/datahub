@@ -532,6 +532,32 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/WideAlerts'
+  /info-service:
+    get:
+      summary: Servicios de información
+      description: Servicio que provee información general, como horarios, rutas, paradas y alertas en distintos medios como aplicaciones, pantallas, sitios web, etc.
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: ['website', 'screens', 'app', 'analysis', 'chatbot', 'social', 'other']
+          description: 'Búsqueda por tipo de servicios de información.'
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: 'Búsqueda por nombre de servicios de información.'
+      tags:
+        - External
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/InfoService'
 
 components:
   schemas:
@@ -1213,6 +1239,26 @@ components:
           description: URL de la alerta
           type: string
           example: 'https://bucr.digital/alertas/bUCR-001'
+    InfoService:
+      type: object
+      properties:
+        name:
+          description: Identificador del servicio
+          type: string
+          example: 'Infobús Pantallas'
+        description:
+          description: Descripción del servicio
+          type: string
+          example: 'Servicio de pantallas informativas en la Universidad de Costa Rica'
+        type:
+          description: Tipo de servicio de información
+          type: string
+          enum: ['website', 'screens', 'app', 'analysis', 'chatbot', 'social', 'other']
+          example: 'screens'
+        provider:
+          description: Proveedor del servicio
+          type: string
+          example: 'Infobús S.A.'
 
 tags:
   - name: Schedule
