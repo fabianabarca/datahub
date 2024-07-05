@@ -5,8 +5,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
 from . import views
 
 router = routers.DefaultRouter()
-router.register(r"info-service", views.InfoServiceViewSet)
-router.register(r"provider", views.ProviderViewSet)
+router.register(r"info-services", views.InfoServiceViewSet)
+router.register(r"gtfs-providers", views.GTFSProviderViewSet)
 router.register(r"routes", views.RouteViewSet)
 router.register(r"trips", views.TripViewSet)
 
