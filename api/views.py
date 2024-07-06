@@ -54,9 +54,12 @@ class TripViewSet(viewsets.ModelViewSet):
     serializer_class = TripSerializer
 
     def get_queryset(self):
+        # Initial queryset before (possible) filtering
         queryset = Trip.objects.all()
+        # Get query parameters
         trip_id = self.request.query_params.get("trip_id")
         route_id = self.request.query_params.get("route_id")
+        # Filter queryset if needed, based on query parameters
         if trip_id is not None:
             queryset = queryset.filter(trip_id=trip_id)
         elif route_id is not None:

@@ -330,7 +330,10 @@ class GeoShape(models.Model):
     shape_id = models.CharField(
         max_length=255, help_text="Identificador único de la trayectoria."
     )
-    geoshape = models.LineStringField(help_text="Trayectoria de la ruta.")
+    geoshape = models.LineStringField(
+        help_text="Trayectoria de la ruta.",
+        # dim=3, # To store 3D coordinates (x, y, z)
+    )
     has_altitude = models.BooleanField(
         help_text="Indica si la trayectoria tiene datos de altitud", default=False
     )
