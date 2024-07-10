@@ -313,6 +313,13 @@ paths:
       description: Datos sobre el feed de datos, como la versión, la URL y la fecha de inicio y fin de la operación.
       tags:
         - Schedule
+      parameters:
+        - in: query
+          name: feed_publisher_name
+          schema:
+            type: string
+            example: 'bUCR'
+          description: 'Búsqueda de información del feed por nombre del proveedor.'
       responses:
         '200':
           description: OK
@@ -394,6 +401,28 @@ paths:
       description: Datos sobre las posiciones de los vehículos, como la ubicación, la velocidad y la dirección.
       tags:
         - Realtime
+      parameters: 
+        - in: query
+          name: vehicle_vehicle_id
+          schema:
+            type: string
+          description: 'Búsqueda de posiciones de vehículos por identificador.'
+        - in: query
+          name: vehicle_trip_route_id
+          schema:
+            type: string
+          description: 'Búsqueda de posiciones de vehículos por ruta.'
+        - in: query
+          name: vehicle_trip_trip_id
+          schema:
+            type: string
+          description: 'Búsqueda de posiciones de vehículos por viaje.'
+        - in: query
+          name: vehicle_trip_schedule_relationship
+          schema:
+            type: string
+            enum: ['SCHEDULED', 'ADDED', 'UNSCHEDULED', 'CANCELED', 'DUPLICATED', 'DELETED']
+          description: 'Búsqueda de posiciones de vehículos por relación con el horario.'
       responses:
         '200':
           description: OK
@@ -409,6 +438,27 @@ paths:
       description: Obtiene las horas de llegada y salida de las paradas en tiempo real.
       tags:
         - Realtime
+      parameters: 
+        - in: query
+          name: trip_trip_id
+          schema:
+            type: string
+          description: 'Búsqueda de actualizaciones de viajes por identificador.'
+        - in: query
+          name: trip_route_id
+          schema:
+            type: string
+          description: 'Búsqueda de actualizaciones de viajes por ruta.'
+        - in: query
+          name: trip_start_time
+          schema:
+            type: string
+          description: 'Búsqueda de actualizaciones de viajes por hora de salida.'
+        - in: query
+          name: vehicle_id
+          schema:
+            type: string
+          description: 'Búsqueda de actualizaciones de viajes por identificador de vehículo.'
       responses:
         '200':
           description: OK
@@ -424,6 +474,32 @@ paths:
       description: Obtiene alertas que modifican el servicio en tiempo real.
       tags:
         - Realtime
+      parameters:
+        - in: query
+          name: alert_id
+          schema:
+            type: string
+          description: 'Búsqueda de alertas por identificador de servicio.'
+        - in: query
+          name: route_id
+          schema:
+            type: string
+          description: 'Búsqueda de alertas por ruta.'
+        - in: query
+          name: trip_id
+          schema:
+            type: string
+          description: 'Búsqueda de alertas por viaje.'
+        - in: query
+          name: service_start_time
+          schema:
+            type: string
+          description: 'Búsqueda de alertas por hora de inicio.'
+        - in: query
+          name: service_date
+          schema:
+            type: string
+          description: 'Búsqueda de alertas por fecha de inicio.'
       responses:
         '200':
           description: OK
@@ -439,6 +515,12 @@ paths:
       description: Obtiene datos meteorológicos en tiempo real
       tags:
         - External
+      parameters:
+        - in: query
+          name: location
+          schema:
+            type: string
+          description: 'Búsqueda de datos meteorológicos por ubicación.'
       responses:
         '200':
           description: OK
@@ -454,6 +536,17 @@ paths:
       description: Obtiene datos de las redes sociales de la agencia operadora del servicio y de las personas usuarias.
       tags:
         - External
+      parameters:
+        - in: query
+          name: social_media
+          schema:
+            type: string
+          description: 'Búsqueda de redes sociales por nombre.'
+        - in: query
+          name: social_location
+          schema:
+            type: string
+          description: 'Búsqueda de redes sociales por ubicación.'
       responses:
         '200':
           description: OK
@@ -829,6 +922,10 @@ components:
           description: Relación con el horario
           type: string
           enum: ['SCHEDULED', 'ADDED', 'UNSCHEDULED', 'CANCELED', 'DUPLICATED', 'DELETED']
+        trip_headsign:
+          description: Letrero del viaje
+          type: string
+          example: 'Facultad de Ingeniería'
     StopTimes:
       type: object
       properties:
