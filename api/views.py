@@ -6,6 +6,13 @@ from rest_framework import viewsets, permissions
 
 from .serializers import InfoServiceSerializer, GTFSProviderSerializer, RouteSerializer, TripSerializer
 
+class FilterMixin:
+    def get_filtered_queryset(self, allowed_query_params):
+        queryset = self.queryset
+        query_params = self.request.query_params
+        filter_args = {param: value for param, value in query_params.items() if param in allowed_query_params and value is not None}
+        return queryset.filter(**filter_args)
+
 
 class InfoServiceViewSet(viewsets.ModelViewSet):
     """
@@ -45,26 +52,17 @@ class RouteViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
 
 
-class TripViewSet(viewsets.ModelViewSet):
+class TripViewSet(FilterMixin, viewsets.ModelViewSet):
     """
     Viajes de transporte público.
     """
 
     queryset = Trip.objects.all()
     serializer_class = TripSerializer
+    allowed_query_parameters =  ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
 
     def get_queryset(self):
-        # Initial queryset before (possible) filtering
-        queryset = Trip.objects.all()
-        # Get query parameters
-        trip_id = self.request.query_params.get("trip_id")
-        route_id = self.request.query_params.get("route_id")
-        # Filter queryset if needed, based on query parameters
-        if trip_id is not None:
-            queryset = queryset.filter(trip_id=trip_id)
-        elif route_id is not None:
-            queryset = queryset.filter(route_id=route_id)
-        return queryset
+        return self.get_filtered_queryset(self.allowed_query_parameters)
 
     # permission_classes = [permissions.IsAuthenticated]
 
