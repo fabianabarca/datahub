@@ -686,8 +686,6 @@ class Social(models.Model):
             return self.social_id
 
 
-
-
 # -------------
 # GTFS Realtime
 # -------------
