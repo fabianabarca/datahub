@@ -55,6 +55,14 @@ class CommonAlert(models.Model):
 class Social(models.Model):
     """Social media posts for a specific time and location.
     Maps to social.txt in the GTFS feed.
+
+    TODO: sugerencia: utilizar el API de Twitter como referencia para completar el modelo de esta clase. El objetivo es: recopilar datos de un hashtag o de una cuenta de Twitter y mostrarlos en la pantalla de información de la parada o estación.
+
+    En general queremos poner textos de tweets ligados a temas relevantes y posiblemente filtrados para usuarios autorizados o bien algún otro método de filtrado (ejemplo: por geolocalización, sin malas palabras, etc.).
+
+    Referencia: https://developer.x.com/en/docs/twitter-api/tweets/lookup/quick-start
+
+    Nota: probar el API de Twitter antes para verificar qué resultados se obtienen y cómo se pueden filtrar.
     """
 
     id = models.BigAutoField(primary_key=True)
