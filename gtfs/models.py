@@ -179,9 +179,9 @@ class Stop(models.Model):
     )
 
     # Build stop_point from stop_lat and stop_lon
-    def save(self, *args, **kwargs):
-        self.stop_point = Point(self.stop_lon, self.stop_lat)
-        super(Stop, self).save(*args, **kwargs)
+    #def save(self, *args, **kwargs):
+    #    self.stop_point = Point(self.stop_lon, self.stop_lat)
+    #    super(Stop, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.stop_name
