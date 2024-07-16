@@ -1,0 +1,3 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+bUCR_L1,UCR,bUCR L1,Bus UCR (L1) con milla,"Esta ruta conecta las tres fincas del Campus Universitario Rodrigo Facio en San Pedro de Montes de Oca, e incluye la vuelta por la milla universitaria.",3,https://bus.ucr.ac.cr/#L1,008641,FFFFFF
+bUCR_L2,UCR,bUCR L2,Bus UCR (L2) sin milla,"Esta ruta conecta las tres fincas del Campus Universitario Rodrigo Facio en San Pedro de Montes de Oca, y no incluye la vuelta por la milla universitaria.",3,https://bus.ucr.ac.cr/#L2,F37021,FFFFFF
