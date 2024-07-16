@@ -34,8 +34,6 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
 # Application definition
 
 INSTALLED_APPS = [
-    "daphne",
-    "channels",
     "website.apps.WebsiteConfig",
     "gtfs.apps.GtfsConfig",
     "feed.apps.FeedConfig",
@@ -85,7 +83,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "datahub.wsgi.application"
-ASGI_APPLICATION = "datahub.asgi.application"
 
 
 # Database
