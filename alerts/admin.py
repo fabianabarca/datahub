@@ -1,7 +1,8 @@
 from django.contrib.gis import admin
-from .models import Screen, ScreenStops
+from .models import Weather, CommonAlert, Social
 
 # Register your models here.
 
-admin.site.register(Screen, admin.GISModelAdmin)
-admin.site.register(ScreenStops)
+admin.site.register(Weather)
+admin.site.register(CommonAlert)
+admin.site.register(Social)

@@ -1,51 +1,84 @@
 from django.contrib.gis.db import models
-from gtfs.models import Stop
 
 # Create your models here.
 
 
-class Screen(models.Model):
-    ORIENTATION_CHOICES = [
-        ("landscape", "Horizontal"),
-        ("portrait", "Vertical"),
-    ]
-    RATIO_CHOICES = [
-        ("4:3", "4:3"),
-        ("16:9", "16:9"),
-        ("16:10", "16:10"),
-    ]
+class Weather(models.Model):
+    """Weather conditions for a specific time and location.
 
-    screen_id = models.CharField(max_length=100, primary_key=True)
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    location = models.PointField(blank=True, null=True)
-    address = models.TextField(blank=True, null=True)
-    orientation = models.CharField(
-        max_length=10,
-        choices=ORIENTATION_CHOICES,
-        default="landscape",
-        blank=True, null=True,
+    TODO: buscar APIs de referencia para completar el modelo de esta clase. El objetivo es: proveer datos para cada ubicación (paradas, estaciones, etc.) actuales y para la siguiente hora o más o menos. Ejemplos útiles de variables: temperatura, probabilidad de lluvia, radiación UV. Nota: no todos los datos son para desplegar en pantallas, hay también que pueden ser útiles para investigación.
+    """
+
+    id = models.BigAutoField(primary_key=True)
+    weather_id = models.CharField(
+        max_length=255, help_text="Identificador único de la condición climática."
     )
-    ratio = models.CharField(
-        max_length=10, 
-        choices=RATIO_CHOICES, 
-        default="16:9", 
-        blank=True, null=True
+    weather_date = models.DateField(help_text="Fecha de la condición climática.")
+    weather_time = models.TimeField(help_text="Hora de la condición climática.")
+    weather_location = models.CharField(
+        max_length=255, help_text="Ubicación de la condición climática."
     )
-    size = models.PositiveIntegerField(help_text="diagonal en pulgadas", blank=True, null=True)
-    has_audio = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_active = models.BooleanField(default=False)
+    weather_condition = models.CharField(
+        max_length=255, help_text="Condición climática."
+    )
+    temperature = models.DecimalField(
+        max_digits=5, decimal_places=2, help_text="Temperatura."
+    )
+    humidity = models.DecimalField(max_digits=5, decimal_places=2, help_text="Humedad.")
+    wind_speed = models.DecimalField(
+        max_digits=5, decimal_places=2, help_text="Velocidad del viento."
+    )
+    wind_direction = models.DecimalField(
+        max_digits=5, decimal_places=2, help_text="Dirección del viento."
+    )
+    precipitation = models.DecimalField(
+        max_digits=5, decimal_places=2, help_text="Precipitación."
+    )
+    visibility = models.DecimalField(
+        max_digits=5, decimal_places=2, help_text="Visibilidad."
+    )
+    pressure = models.DecimalField(
+        max_digits=5, decimal_places=2, help_text="Presión atmosférica."
+    )
 
     def __str__(self):
-        return self.name
+        return self.weather_id
 
 
-class ScreenStops(models.Model):
-    id = models.AutoField(primary_key=True)
-    screen = models.ForeignKey(Screen, on_delete=models.CASCADE)
-    stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
+class CommonAlert(models.Model):
+    """Common alerts for a specific time and location based on the Common Alerting Protocol (CAP) specification ITU X.1303."""
+
+    id = models.BigAutoField(primary_key=True)
+    
+
+
+class Social(models.Model):
+    """Social media posts for a specific time and location.
+    Maps to social.txt in the GTFS feed.
+    """
+
+    id = models.BigAutoField(primary_key=True)
+    social_id = models.CharField(
+        max_length=255,
+        help_text="Identificador único de la publicación en redes sociales.",
+    )
+    social_date = models.DateField(
+        help_text="Fecha de la publicación en redes sociales."
+    )
+    social_time = models.TimeField(
+        help_text="Hora de la publicación en redes sociales."
+    )
+    social_location = models.CharField(
+        max_length=255, help_text="Ubicación de la publicación en redes sociales."
+    )
+    social_content = models.TextField(
+        help_text="Contenido de la publicación en redes sociales."
+    )
+    social_media = models.CharField(max_length=255, help_text="Red social.")
+    social_likes = models.PositiveIntegerField(help_text="Número de likes.")
+    social_shares = models.PositiveIntegerField(help_text="Número de compartidos.")
+    social_comments = models.PositiveIntegerField(help_text="Número de comentarios.")
 
     def __str__(self):
-        return f"{self.screen} - {self.stop}"
+        return self.social_id
+
