@@ -517,10 +517,15 @@ paths:
         - External
       parameters:
         - in: query
-          name: location
+          name: weather_location
           schema:
             type: string
           description: 'Búsqueda de datos meteorológicos por ubicación.'
+        - in: query
+          name: weather_condition
+          schema:
+            type: string
+          description: 'Búsqueda de datos meteorológicos por condición.'
       responses:
         '200':
           description: OK
@@ -547,6 +552,11 @@ paths:
           schema:
             type: string
           description: 'Búsqueda de redes sociales por ubicación.'
+        - in: query
+          name: social_content
+          schema:
+            type: string
+          description: 'Búsqueda de redes sociales por contenido.'
       responses:
         '200':
           description: OK
@@ -1283,11 +1293,11 @@ components:
           type: number
           format: float
           example: 0.5
-        rainfall:
-          description: Descripción de intensidad de lluvia
-          type: number
-          enum: ['NO_RAIN', 'DRIZZLE', 'LIGHT_RAIN', 'HEAVY_RAIN']
-          example: 'DRIZZLE'
+        #rainfall:
+        #  description: Descripción de intensidad de lluvia
+        #  type: number
+        #  enum: ['NO_RAIN', 'DRIZZLE', 'LIGHT_RAIN', 'HEAVY_RAIN']
+        #  example: 'DRIZZLE'
         visibility:
           description: Visibilidad
           type: number

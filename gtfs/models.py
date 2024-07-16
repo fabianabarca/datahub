@@ -536,13 +536,13 @@ class ServiceAlert(models.Model):
     service_end_time = models.TimeField(
         help_text="Hora de finalización del servicio descrito por la alerta."
     )
-    header = models.CharField(
+    alert_header = models.CharField(
         max_length=255, help_text="Encabezado de la alerta."
     )
-    description = models.TextField(
+    alert_description = models.TextField(
         help_text="Descripción de la alerta."
     )
-    url = models.URLField(
+    alert_url = models.URLField(
         blank=True, null=True, help_text="URL de la alerta."
     )
     cause = models.PositiveIntegerField(
