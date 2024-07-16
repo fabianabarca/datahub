@@ -25,7 +25,7 @@ class GTFSProviderViewSet(viewsets.ModelViewSet):
     queryset = GTFSProvider.objects.all()
     serializer_class = GTFSProviderSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['code', 'name']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -37,7 +37,7 @@ class AgencyViewSet(viewsets.ModelViewSet):
     queryset = Agency.objects.all()
     serializer_class = AgencySerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['agency_id', 'agency_name']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -49,7 +49,7 @@ class StopViewSet(viewsets.ModelViewSet):
     queryset = Stop.objects.all()
     serializer_class = StopSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['route_id', 'location_type', 'wheelchair_boarding', 'located_within', 'close_to', 'distance']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -61,7 +61,7 @@ class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all()
     serializer_class = RouteSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['route_type', 'route_id']
 
     #def get_queryset(self):
     #    queryset = Route.objects.all()
@@ -81,7 +81,7 @@ class CalendarViewSet(viewsets.ModelViewSet):
     queryset = Calendar.objects.all()
     serializer_class = CalendarSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['service_id']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -93,7 +93,7 @@ class CalendarDateViewSet(viewsets.ModelViewSet):
     queryset = CalendarDate.objects.all()
     serializer_class = CalendarDateSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['service_id']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -105,7 +105,7 @@ class ShapeViewSet(viewsets.ModelViewSet):
     queryset = Shape.objects.all()
     serializer_class = ShapeSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['shape_id']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -117,7 +117,7 @@ class GeoShapeViewSet(viewsets.ModelViewSet):
     queryset = GeoShape.objects.all()
     serializer_class = GeoShapeSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['shape_id']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -147,7 +147,7 @@ class StopTimeViewSet(viewsets.ModelViewSet):
     queryset = StopTime.objects.all()
     serializer_class = StopTimeSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['trip_id', 'stop_id']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -159,7 +159,7 @@ class FeedInfoViewSet(viewsets.ModelViewSet):
     queryset = FeedInfo.objects.all()
     serializer_class = FeedInfoSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['feed_publisher_name']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -173,6 +173,7 @@ class FareAttributeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
     # permission_classes = [permissions.IsAuthenticated]
+    # Esto no tiene path con query params ni response schema
 
 
 class FareRuleViewSet(viewsets.ModelViewSet):
@@ -185,6 +186,7 @@ class FareRuleViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
     # permission_classes = [permissions.IsAuthenticated]
+    # Esto no tiene path con query params ni response schema
 
 
 class ServiceAlertViewSet(viewsets.ModelViewSet):
@@ -195,7 +197,7 @@ class ServiceAlertViewSet(viewsets.ModelViewSet):
     queryset = ServiceAlert.objects.all()
     serializer_class = ServiceAlertSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['alert_id', 'route_id', 'trip_id', 'service_start_time', 'service_date']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -207,7 +209,7 @@ class WeatherViewSet(viewsets.ModelViewSet):
     queryset = Weather.objects.all()
     serializer_class = WeatherSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['weather_location', 'weather_condition']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -219,7 +221,7 @@ class SocialViewSet(viewsets.ModelViewSet):
     queryset = Social.objects.all()
     serializer_class = SocialSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['social_media', 'social_content', 'social_location']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -233,6 +235,7 @@ class FeedMessageViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
     # permission_classes = [permissions.IsAuthenticated]
+    # Esto no tiene path con query params ni response schema
 
 
 class TripUpdateViewSet(viewsets.ModelViewSet):
@@ -243,7 +246,7 @@ class TripUpdateViewSet(viewsets.ModelViewSet):
     queryset = TripUpdate.objects.all()
     serializer_class = TripUpdateSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['trip_trip_id', 'trip_route_id', 'trip_start_time', 'vehicle_id']
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -258,6 +261,7 @@ class StopTimeUpdateViewSet(viewsets.ModelViewSet):
     filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
 
     # permission_classes = [permissions.IsAuthenticated]
+    # Esto no tiene path con query params ni response schema
 
 
 class VehiclePositionViewSet(viewsets.ModelViewSet):
@@ -268,7 +272,7 @@ class VehiclePositionViewSet(viewsets.ModelViewSet):
     queryset = VehiclePosition.objects.all()
     serializer_class = VehiclePositionSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['vehicle_vehicle_id', 'vehicle_trip_route_id', 'vehicle_trip_trip_id', 'vehicle_trip_schedule_relationship']
 
     # permission_classes = [permissions.IsAuthenticated]
 
@@ -284,7 +288,7 @@ class RecordViewSet(viewsets.ModelViewSet):
     filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
 
     # permission_classes = [permissions.IsAuthenticated]
-
+    # Esto no tiene path con query params ni response schema
 
 class InfoServiceViewSet(viewsets.ModelViewSet):
     """
@@ -294,7 +298,7 @@ class InfoServiceViewSet(viewsets.ModelViewSet):
     queryset = InfoService.objects.all().order_by("created_at")
     serializer_class = InfoServiceSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['shape_id', 'direction_id', 'trip_id', 'route_id', 'service_id']
+    filterset_fields = ['type', 'name']
     # permission_classes = [permissions.IsAuthenticated]
 
 
