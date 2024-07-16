@@ -330,7 +330,7 @@ class GeoShape(models.Model):
     shape_id = models.CharField(
         max_length=255, help_text="Identificador único de la trayectoria."
     )
-    geoshape = models.LineStringField(
+    geometry = models.LineStringField(
         help_text="Trayectoria de la ruta.",
         # dim=3, # To store 3D coordinates (x, y, z)
     )
@@ -339,7 +339,7 @@ class GeoShape(models.Model):
     )
 
     def __str__(self):
-        return self.geoshape_id
+        return self.shape_id
 
 
 class Trip(models.Model):
@@ -368,7 +368,9 @@ class Trip(models.Model):
         max_length=255, blank=True, null=True, help_text="Identificador del bloque."
     )
     shape_id = models.CharField(max_length=255, blank=True, null=True)
-    geoshape_id = models.CharField(max_length=200)
+    geoshape = models.ForeignKey(
+        GeoShape, on_delete=models.SET_NULL, blank=True, null=True
+    )
     wheelchair_accessible = models.PositiveIntegerField(
         choices=((0, "No especificado"), (1, "Accesible"), (2, "No accesible")),
         help_text="¿Tiene acceso para sillas de ruedas?",
@@ -511,185 +513,9 @@ class FareRule(models.Model):
         return f"{self.fare_id}: {self.route_id}"
 
 
-class ServiceAlert(models.Model):
-    """Alerts and warnings about the service.
-    Maps to alerts.txt in the GTFS feed.
-    """
-
-    id = models.BigAutoField(primary_key=True)
-    feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    alert_id = models.CharField(
-        max_length=255, help_text="Identificador único de la alerta."
-    )
-    route_id = models.CharField(
-        max_length=255, help_text="Identificador de la ruta."
-    )
-    trip_id = models.CharField(
-        max_length=255, help_text="Identificador del viaje."
-    )
-    service_date = models.DateField(
-        help_text="Fecha del servicio descrito por la alerta."
-    )
-    service_start_time = models.TimeField(
-        help_text="Hora de inicio del servicio descrito por la alerta."
-    )
-    service_end_time = models.TimeField(
-        help_text="Hora de finalización del servicio descrito por la alerta."
-    )
-    alert_header = models.CharField(
-        max_length=255, help_text="Encabezado de la alerta."
-    )
-    alert_description = models.TextField(
-        help_text="Descripción de la alerta."
-    )
-    alert_url = models.URLField(
-        blank=True, null=True, help_text="URL de la alerta."
-    )
-    cause = models.PositiveIntegerField(
-        choices=(
-            (1, "Otra causa"),
-            (2, "Accidente"),
-            (3, "Congestión"),
-            (4, "Evento"),
-            (5, "Mantenimiento"),
-            (6, "Planificado"),
-            (7, "Huelga"),
-            (8, "Manifestación"),
-            (9, "Demora"),
-            (10, "Cierre"),
-        ),
-        help_text="Causa de la alerta."
-    )
-    effect = models.PositiveIntegerField(
-        choices=(
-            (1, "Otro efecto"),
-            (2, "Desviación"),
-            (3, "Adelanto"),
-            (4, "Cancelación"),
-            (5, "Cierre"),
-            (6, "Desvío"),
-            (7, "Detención"),
-            (8, "Desconocido"),
-        ),
-        help_text="Efecto de la alerta."
-    )
-    severity = models.PositiveIntegerField(
-        choices=(
-            (1, "Desconocido"),
-            (2, "Información"),
-            (3, "Advertencia"),
-            (4, "Grave"),
-            (5, "Muy grave"),
-        ),
-        help_text="Severidad de la alerta."
-    )
-    published = models.DateTimeField(
-        help_text="Fecha y hora de publicación de la alerta."
-    )
-    updated = models.DateTimeField(
-        help_text="Fecha y hora de actualización de la alerta."
-    )
-    informed_entity = models.JSONField(
-        help_text="Entidades informadas por la alerta."
-    )
-
-    def __str__(self):
-        return self.alert_id
-
-
-class Weather(models.Model):
-
-    """Weather conditions for a specific time and location.
-    Maps to weather.txt in the GTFS feed.
-    """
-
-    id = models.BigAutoField(primary_key=True)
-    feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    weather_id = models.CharField(
-        max_length=255, help_text="Identificador único de la condición climática."
-    )
-    weather_date = models.DateField(
-        help_text="Fecha de la condición climática."
-    )
-    weather_time = models.TimeField(
-        help_text="Hora de la condición climática."
-    )
-    weather_location = models.CharField(
-        max_length=255, help_text="Ubicación de la condición climática."
-    )
-    weather_condition = models.CharField(
-        max_length=255, help_text="Condición climática."
-    )
-    temperature = models.DecimalField(
-        max_digits=5, decimal_places=2, help_text="Temperatura."
-    )
-    humidity = models.DecimalField(
-        max_digits=5, decimal_places=2, help_text="Humedad."
-    )
-    wind_speed = models.DecimalField(
-        max_digits=5, decimal_places=2, help_text="Velocidad del viento."
-    )
-    wind_direction = models.DecimalField(
-        max_digits=5, decimal_places=2, help_text="Dirección del viento."
-    )
-    precipitation = models.DecimalField(
-        max_digits=5, decimal_places=2, help_text="Precipitación."
-    )
-    visibility = models.DecimalField(
-        max_digits=5, decimal_places=2, help_text="Visibilidad."
-    )
-    pressure = models.DecimalField(
-        max_digits=5, decimal_places=2, help_text="Presión atmosférica."
-    )
-
-    def __str__(self):
-        return self.weather_id
-
-
-class Social(models.Model):
-    
-        """Social media posts for a specific time and location.
-        Maps to social.txt in the GTFS feed.
-        """
-    
-        id = models.BigAutoField(primary_key=True)
-        feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-        social_id = models.CharField(
-            max_length=255, help_text="Identificador único de la publicación en redes sociales."
-        )
-        social_date = models.DateField(
-            help_text="Fecha de la publicación en redes sociales."
-        )
-        social_time = models.TimeField(
-            help_text="Hora de la publicación en redes sociales."
-        )
-        social_location = models.CharField(
-            max_length=255, help_text="Ubicación de la publicación en redes sociales."
-        )
-        social_content = models.TextField(
-            help_text="Contenido de la publicación en redes sociales."
-        )
-        social_media = models.CharField(
-            max_length=255, help_text="Red social."
-        )
-        social_likes = models.PositiveIntegerField(
-            help_text="Número de likes."
-        )
-        social_shares = models.PositiveIntegerField(
-            help_text="Número de compartidos."
-        )
-        social_comments = models.PositiveIntegerField(
-            help_text="Número de comentarios."
-        )
-    
-        def __str__(self):
-            return self.social_id
-
-
 # -------------
 # GTFS Realtime
 # -------------
-
 
 class FeedMessage(models.Model):
     """
@@ -868,6 +694,84 @@ class VehiclePosition(models.Model):
 
     def __str__(self):
         return f"{self.entity_id} ({self.feed_message})"
+
+
+class Alert(models.Model):
+    """Alerts and warnings about the service.
+    Maps to alerts.txt in the GTFS feed.
+
+    TODO: ajustar con Alerts de GTFS Realtime
+    """
+
+    id = models.BigAutoField(primary_key=True)
+    feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
+    alert_id = models.CharField(
+        max_length=255, help_text="Identificador único de la alerta."
+    )
+    route_id = models.CharField(max_length=255, help_text="Identificador de la ruta.")
+    trip_id = models.CharField(max_length=255, help_text="Identificador del viaje.")
+    service_date = models.DateField(
+        help_text="Fecha del servicio descrito por la alerta."
+    )
+    service_start_time = models.TimeField(
+        help_text="Hora de inicio del servicio descrito por la alerta."
+    )
+    service_end_time = models.TimeField(
+        help_text="Hora de finalización del servicio descrito por la alerta."
+    )
+    alert_header = models.CharField(
+        max_length=255, help_text="Encabezado de la alerta."
+    )
+    alert_description = models.TextField(help_text="Descripción de la alerta.")
+    alert_url = models.URLField(blank=True, null=True, help_text="URL de la alerta.")
+    cause = models.PositiveIntegerField(
+        choices=(
+            (1, "Otra causa"),
+            (2, "Accidente"),
+            (3, "Congestión"),
+            (4, "Evento"),
+            (5, "Mantenimiento"),
+            (6, "Planificado"),
+            (7, "Huelga"),
+            (8, "Manifestación"),
+            (9, "Demora"),
+            (10, "Cierre"),
+        ),
+        help_text="Causa de la alerta.",
+    )
+    effect = models.PositiveIntegerField(
+        choices=(
+            (1, "Otro efecto"),
+            (2, "Desviación"),
+            (3, "Adelanto"),
+            (4, "Cancelación"),
+            (5, "Cierre"),
+            (6, "Desvío"),
+            (7, "Detención"),
+            (8, "Desconocido"),
+        ),
+        help_text="Efecto de la alerta.",
+    )
+    severity = models.PositiveIntegerField(
+        choices=(
+            (1, "Desconocido"),
+            (2, "Información"),
+            (3, "Advertencia"),
+            (4, "Grave"),
+            (5, "Muy grave"),
+        ),
+        help_text="Severidad de la alerta.",
+    )
+    published = models.DateTimeField(
+        help_text="Fecha y hora de publicación de la alerta."
+    )
+    updated = models.DateTimeField(
+        help_text="Fecha y hora de actualización de la alerta."
+    )
+    informed_entity = models.JSONField(help_text="Entidades informadas por la alerta.")
+
+    def __str__(self):
+        return self.alert_id
 
 
 # -------

@@ -194,7 +194,7 @@ class ServiceAlertViewSet(viewsets.ModelViewSet):
     Alertas de servicio de transporte público.
     """
 
-    queryset = ServiceAlert.objects.all()
+    queryset = Alert.objects.all()
     serializer_class = ServiceAlertSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['alert_id', 'route_id', 'trip_id', 'service_start_time', 'service_date']
