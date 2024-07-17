@@ -491,6 +491,12 @@ paths:
           schema:
             type: string
           description: 'Hora de referencia para buscar próximos viajes.'
+        - in: query
+          name: max_results
+          schema:
+            type: integer
+            default: 6
+          description: 'Número máximo de resultados.'
       responses:
         '200':
           description: OK
