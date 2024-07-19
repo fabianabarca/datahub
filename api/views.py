@@ -55,12 +55,12 @@ class StopViewSet(viewsets.ModelViewSet):
     serializer_class = StopSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = [
-        "route_id",
-        "location_type",
-        "wheelchair_boarding",
-        "located_within",
-        "close_to",
-        "distance",
+        "stop_id",
+        "stop_code",
+        "stop_name",
+        "stop_lat",
+        "stop_lon",
+        "stop_url"
     ]
     # permission_classes = [permissions.IsAuthenticated]
 
