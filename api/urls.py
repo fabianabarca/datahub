@@ -9,6 +9,8 @@ router.register(r"info-services", views.InfoServiceViewSet)
 router.register(r"gtfs-providers", views.GTFSProviderViewSet)
 router.register(r"routes", views.RouteViewSet)
 router.register(r"trips", views.TripViewSet)
+router.register(r"stops", views.StopViewSet)
+router.register(r"shapes", views.ShapeViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
