@@ -2,6 +2,7 @@ from feed.models import InfoService
 from gtfs.models import *
 from alerts.models import *
 from rest_framework import serializers
+
 # from gtfs.models import GTFSProvider, Route, Trip, StopTime, Stop, FeedInfo, Calendar, CalendarDate, Shape, GeoShape, FareAttribute, FareRule, ServiceAlert, Weather, Social, FeedMessage, TripUpdate, StopTimeUpdate, VehiclePosition, Record, Agency
 
 
@@ -9,6 +10,12 @@ class GTFSProviderSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = GTFSProvider
         fields = "__all__"
+
+
+class NextTripSerializer(serializers.Serializer):
+    
+    stop_id = serializers.CharField()
+    trip_id = serializers.CharField()
 
 
 class AgencySerializer(serializers.HyperlinkedModelSerializer):
@@ -195,7 +202,3 @@ class InfoServiceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = InfoService
         fields = "__all__"
-
-
-
-

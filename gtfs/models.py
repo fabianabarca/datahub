@@ -593,8 +593,9 @@ class StopTimeUpdate(models.Model):
 
     id = models.BigAutoField(primary_key=True)
 
-    # Foreign key to TripUpdate model
-    trip_update = models.ForeignKey("TripUpdate", on_delete=models.CASCADE)
+    # Foreign key to FeedMessage and TripUpdate models
+    feed_message = models.ForeignKey(FeedMessage, on_delete=models.CASCADE)
+    trip_update = models.ForeignKey(TripUpdate, on_delete=models.CASCADE)
 
     # Stop ID (string)
     stop_sequence = models.IntegerField()
