@@ -395,6 +395,28 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TripTimes'     
+  /next-trips:
+    get:
+      summary: Próximos viajes
+      description: Datos sobre los próximos viajes en una o varias paradas particulares, como la hora de llegada y salida, y la secuencia de la parada. Útil para desplegar información en tiempo real en pantallas o páginas web, por ejemplo.
+      tags:
+        - Realtime
+      parameters:
+        - in: query
+          name: stop_id
+          schema:
+            type: string
+            example: 'bUCR-0-03'
+          description: 'Búsqueda de próximos viajes en una parada particular.'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NextTrips'
   /vehicle-positions:
     get:
       summary: Posiciones de los vehículos
@@ -1159,6 +1181,73 @@ components:
           description: Duración del viaje
           type: integer
           example: 3600
+    NextTrips:
+      type: object
+      properties:
+        stop_id:
+          description: Identificador de la parada según GTFS Schedule
+          type: string
+          example: 'bUCR-0-03'
+        next-trips:
+          type: array
+          items:
+            type: object
+            properties:
+              trip_id:
+                description: Identificador del viaje según GTFS Schedule
+                type: string
+                example: 'JFH367'
+              route_short_name:
+                description: Nombre corto de la ruta
+                type: string
+                example: 'L1'
+              route_long_name:
+                description: Nombre largo de la ruta
+                type: string
+                example: 'Línea 1'
+              trip_headsign:
+                description: Destino del viaje
+                type: string
+                example: 'Facultad de Ingeniería'
+              wheelchair_accessible:
+                description: Accesibilidad para sillas de ruedas
+                type: string
+                enum: ['NO_VALUE', 'UNKNOWN', 'WHEELCHAIR_ACCESSIBLE', 'WHEELCHAIR_INACCESSIBLE']
+                example: 'WHEELCHAIR_ACCESSIBLE'
+              arrival_time:
+                description: Hora de llegada a la parada
+                type: string
+                example: '07:15:00'
+              departure_time:
+                description: Hora de salida de la parada
+                type: string
+                example: '07:15:00'
+              in_progress:
+                description: Indica si el viaje está en progreso
+                type: boolean
+                example: true
+              journey:
+                description: Trayecto del viaje
+                type: object
+                properties:
+                  position_in_shape:
+                    description: Porcentaje de progreso del viaje en la trayectoria
+                    type: number
+                    format: float
+                    example: 0.465
+                  current_stop_sequence:
+                    description: Secuencia de la parada actual
+                    type: integer
+                    example: 15
+                  current_status:
+                    description: Estado actual del vehículo en relación con la parada
+                    type: string
+                    enum: ['INCOMING_AT', 'STOPPED_AT', 'IN_TRANSIT_TO']
+                    example: 'STOPPED_AT'
+                  occupancy_status:
+                    description: Estado de ocupación del vehículo
+                    type: string
+                    enum: ['EMPTY', 'MANY_SEATS_AVAILABLE', 'FEW_SEATS_AVAILABLE', 'STANDING_ROOM_ONLY', 'CRUSHED_STANDING_ROOM_ONLY', 'FULL', 'NOT_ACCEPTING_PASSENGERS', 'NO_DATA_AVAILABLE', 'NOT_BOARDABLE']
     VehiclePositions:
       type: object
       properties:
