@@ -1,9 +1,19 @@
 from django.conf import settings
 from django.http import FileResponse
 from feed.models import InfoService
-from gtfs.models import GTFSProvider, Route, Trip
+from gtfs.models import (
+    GTFSProvider,
+    Route,
+    Trip,
+    FeedMessage,
+    TripUpdate,
+    StopTimeUpdate,
+)
 from rest_framework import viewsets, permissions
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from shapely.geometry import Point, LineString
 
 from .serializers import *
 
@@ -34,6 +44,69 @@ class GTFSProviderViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
 
 
+class NextTripView(APIView):
+    def get(self, request, *args, **kwargs):
+        # TODO: check for errors and exceptions and validations when data is not found
+
+        stop_id = request.query_params.get("stop_id")
+        next_trips = []
+
+        # For trips in progress
+        latest_feed_message = FeedMessage.objects.latest("timestamp")
+        # TODO: check TTL (time to live)
+        stop_time_updates = StopTimeUpdate.objects.filter(
+            feed_message=latest_feed_message, stop_id=stop_id
+        )
+        current_feed = Feed.objects.filter(is_current=True).latest("retrieved_at")
+
+        for stop_time_update in stop_time_updates:
+            trip_update = TripUpdate.objects.get(
+                id=stop_time_update.trip_update,
+            )
+            trip = Trip.objects.filter(
+                trip_id=trip_update.trip_trip_id, feed=current_feed
+            ).first()
+            route = Route.objects.filter(
+                route_id=trip.route_id, feed=current_feed
+            ).first()
+            vehicle_position = VehiclePosition.objects.filter(
+                # TODO: ponder if making a new table for TripDescriptor is better
+                vehicle_trip_trip_id=trip_update.trip_trip_id,
+                vehicle_trip_start_time=trip_update.trip_start_date,
+                vehicle_trip_start_date=trip_update.trip_start_time,
+            )
+            geo_shape = GeoShape.objects.filter(shape_id=trip.shape_id, feed=current_feed).first()
+            geo_shape = LineString(geo_shape.geometry.coords)
+            location = vehicle_position.vehicle_position_point
+            location = Point(location.x, location.y)
+            position_in_shape = geo_shape.project(location) / geo_shape.length
+            
+            next_trips.append(
+                {
+                    "trip_id": trip.trip_id,
+                    "route_id": route.route_id,
+                    "route_short_name": route.route_short_name,
+                    "route_long_name": route.route_long_name,
+                    "trip_headsign": trip.trip_headsign,
+                    "wheelchair_accessible": trip.wheelchair_accessible,
+                    "arrival_time": stop_time_update.arrival_time,
+                    "departure_time": stop_time_update.departure_time,
+                    "in_progress": True,
+                    "journey": {
+                        "position_in_shape": position_in_shape,
+                        "current_stop_sequence": vehicle_position.vehicle_current_stop_sequence,
+                        "current_status": vehicle_position.vehicle_current_status,
+                        "occupancy_status": vehicle_position.vehicle_occupancy_status,
+                    },
+                }
+            )
+
+            # For upcoming trips
+
+        response = {"stop_id": stop_id, "next-trips": next_trips}
+        return Response(response)
+
+
 class AgencyViewSet(viewsets.ModelViewSet):
     """
     Agencias de transporte público.
@@ -60,7 +133,7 @@ class StopViewSet(viewsets.ModelViewSet):
         "stop_name",
         "stop_lat",
         "stop_lon",
-        "stop_url"
+        "stop_url",
     ]
     # permission_classes = [permissions.IsAuthenticated]
 

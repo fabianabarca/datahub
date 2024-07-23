@@ -424,9 +424,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NextTrips'
+                $ref: '#/components/schemas/NextTrips'
   /vehicle-positions:
     get:
       summary: Posiciones de los vehículos
@@ -1175,6 +1173,10 @@ components:
                 description: Identificador del viaje según GTFS Schedule
                 type: string
                 example: 'JFH367'
+              route_id:
+                description: Identificador de la ruta según GTFS Schedule
+                type: string
+                example: 'bUCR-L1'
               route_short_name:
                 description: Nombre corto de la ruta
                 type: string
