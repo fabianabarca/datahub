@@ -11,6 +11,10 @@ router.register(r"routes", views.RouteViewSet)
 router.register(r"trips", views.TripViewSet)
 router.register(r"stops", views.StopViewSet)
 router.register(r"shapes", views.ShapeViewSet)
+router.register(r"calendars", views.CalendarViewSet)
+router.register(r"calendar-dates", views.CalendarDateViewSet)
+router.register(r"agencies", views.AgencyViewSet)
+
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
