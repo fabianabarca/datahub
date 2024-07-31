@@ -14,12 +14,14 @@ router.register(r"shapes", views.ShapeViewSet)
 router.register(r"calendars", views.CalendarViewSet)
 router.register(r"calendar-dates", views.CalendarDateViewSet)
 router.register(r"agencies", views.AgencyViewSet)
+# router.register(r"next-trips", views.NextTripView, basename="next-trips")
 
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path("", include(router.urls)),
+    path("next-trips/", views.NextTripView.as_view(), name="next-trips"),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("docs/schema/", views.get_schema, name="schema"),
     path("docs/", SpectacularRedocView.as_view(url_name="schema"), name="api_docs"),

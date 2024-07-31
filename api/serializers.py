@@ -12,10 +12,30 @@ class GTFSProviderSerializer(serializers.HyperlinkedModelSerializer):
         fields = "__all__"
 
 
-class NextTripSerializer(serializers.Serializer):
-    
-    stop_id = serializers.CharField()
+class ProgressionSerializer(serializers.Serializer):
+    position_in_shape = serializers.FloatField()
+    current_stop_sequence = serializers.IntegerField()
+    current_status = serializers.CharField()
+    occupancy_status = serializers.CharField()
+
+
+class NextArrivalSerializer(serializers.Serializer):
     trip_id = serializers.CharField()
+    route_id = serializers.CharField()
+    route_short_name = serializers.CharField()
+    route_long_name = serializers.CharField()
+    trip_headsign = serializers.CharField()
+    wheelchair_accessible = serializers.CharField()
+    arrival_time = serializers.DateTimeField()
+    departure_time = serializers.DateTimeField()
+    in_progress = serializers.BooleanField()
+    progression = ProgressionSerializer()
+
+
+class NextTripSerializer(serializers.Serializer):
+    stop_id = serializers.CharField()
+    timestamp = serializers.DateTimeField()
+    next_arrivals = NextArrivalSerializer(many=True)
 
 
 class AgencySerializer(serializers.HyperlinkedModelSerializer):
