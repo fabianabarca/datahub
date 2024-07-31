@@ -408,16 +408,18 @@ paths:
             type: string
             example: 'bUCR-0-03'
           description: 'Búsqueda de próximos viajes en una parada particular.'
+          required: true
         - in: query
           name: route_id
           schema:
             type: string
-          description: 'Búsqueda de próximos viajes por ruta.'
+          description: 'Búsqueda de próximos viajes filtrada por parada y por ruta.'
         - in: query
-          name: reference_time
+          name: timestamp
           schema:
             type: string
-          description: 'Hora de referencia para buscar próximos viajes.'
+            example: '2024-07-31T16:12:25-06:00'
+          description: 'Fecha y hora de referencia en el futuro para buscar próximos viajes a partir de ese momento. Opcional, por defecto es el momento actual.'
       responses:
         '200':
           description: OK
@@ -1164,7 +1166,11 @@ components:
           description: Identificador de la parada según GTFS Schedule
           type: string
           example: 'bUCR-0-03'
-        next-trips:
+        timestamp:
+          description: Hora de referencia para buscar próximos viajes
+          type: string
+          example: '2024-07-31T16:12:25-06:00'
+        next_arrivals:
           type: array
           items:
             type: object
@@ -1206,7 +1212,7 @@ components:
                 description: Indica si el viaje está en progreso
                 type: boolean
                 example: true
-              journey:
+              progression:
                 description: Trayecto del viaje
                 type: object
                 properties:
