@@ -13,6 +13,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
 from shapely import geometry
 from datetime import datetime
 
@@ -53,7 +54,10 @@ class NextTripView(APIView):
         if request.query_params.get("stop_id"):
             stop_id = request.query_params.get("stop_id")
         else:
-            return Response("Hola")
+            return Response(
+                {"error": "Es necesario especificar el stop_id como parámetro de la solicitud."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if request.query_params.get("timestamp"):
             timestamp = request.query_params.get("timestamp")
