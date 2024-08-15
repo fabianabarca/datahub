@@ -429,6 +429,43 @@ paths:
                 $ref: '#/components/schemas/NextTrips'
         '400':
           description: Bad Request - Es necesario especificar el stop_id como parámetro de la solicitud.
+  /next-stops:
+    get:
+      summary: Próximas paradas
+      description: Datos sobre las próximas paradas en un viaje particular y los tiempos estimados de llegada. Útil para desplegar información en tiempo real en pantallas en los autobuses.
+      tags:
+        - Realtime
+      parameters:
+        - in: query
+          name: trip_id
+          schema:
+            type: string
+            example: 'JFH367'
+          description: 'Búsqueda de próximas paradas en un viaje particular.'
+          required: true
+        - in: query
+          name: start_date
+          schema:
+            type: string
+            example: '2024-07-31'
+          description: 'Fecha de salida del viaje.'
+          required: true
+        - in: query
+          name: start_time
+          schema:
+            type: string
+            example: '16:12:25'
+          description: 'Hora de salida del viaje.'
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NextStops'
+        '400':
+          description: Bad Request - Es necesario especificar trip_id, start_date y start_time como parámetros de la solicitud.
   /vehicle-positions:
     get:
       summary: Posiciones de los vehículos
@@ -1238,6 +1275,46 @@ components:
                     description: Estado de ocupación del vehículo
                     type: string
                     enum: ['EMPTY', 'MANY_SEATS_AVAILABLE', 'FEW_SEATS_AVAILABLE', 'STANDING_ROOM_ONLY', 'CRUSHED_STANDING_ROOM_ONLY', 'FULL', 'NOT_ACCEPTING_PASSENGERS', 'NO_DATA_AVAILABLE', 'NOT_BOARDABLE']
+    NextStops:
+      type: object
+      properties:
+        trip_id:
+          description: Identificador del viaje según GTFS Schedule
+          type: string
+          example: 'JFH367'
+        start_date:
+          description: Fecha de inicio del viaje
+          type: string
+          example: '2024-07-31'
+        start_time:
+          description: Hora de inicio del viaje
+          type: string
+          example: '16:12:25'
+        next_stop_sequence:
+          type: array
+          items:
+            type: object
+            properties:
+              stop_sequence:
+                description: Secuencia de la parada
+                type: integer
+                example: 15
+              stop_id:
+                description: Identificador de la parada según GTFS Schedule
+                type: string
+                example: 'bUCR-0-03'
+              stop_name:
+                description: Nombre de la parada
+                type: string
+                example: 'Facultad de Ingeniería'
+              arrival_time:
+                description: Hora de llegada a la parada
+                type: string
+                example: '07:15:00'
+              departure_time:
+                description: Hora de salida de la parada
+                type: string
+                example: '07:15:00'
     VehiclePositions:
       type: object
       properties:
