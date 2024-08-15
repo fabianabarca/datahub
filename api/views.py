@@ -13,7 +13,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from shapely.geometry import Point, LineString
+from shapely import geometry
 from datetime import datetime
 
 from .serializers import *
@@ -49,7 +49,12 @@ class NextTripView(APIView):
     def get(self, request):
         # TODO: check for errors and exceptions and validations when data is not found
 
-        stop_id = request.query_params.get("stop_id")
+        # Get query parameters
+        if request.query_params.get("stop_id"):
+            stop_id = request.query_params.get("stop_id")
+        else:
+            return Response("Hola")
+
         if request.query_params.get("timestamp"):
             timestamp = request.query_params.get("timestamp")
         else:
@@ -76,17 +81,19 @@ class NextTripView(APIView):
             route = Route.objects.filter(
                 route_id=trip.route_id, feed=current_feed
             ).first()
-            # vehicle_position = VehiclePosition.objects.filter(
-            #     # TODO: ponder if making a new table for TripDescriptor is better
-            #     vehicle_trip_trip_id=trip_update.trip_trip_id,
-            #     vehicle_trip_start_time=trip_update.trip_start_date,
-            #     vehicle_trip_start_date=trip_update.trip_start_time,
-            # )
-            # geo_shape = GeoShape.objects.filter(shape_id=trip.shape_id, feed=current_feed).first()
-            # geo_shape = LineString(geo_shape.geometry.coords)
-            # location = vehicle_position.vehicle_position_point
-            # location = Point(location.x, location.y)
-            # position_in_shape = geo_shape.project(location) / geo_shape.length
+            vehicle_position = VehiclePosition.objects.get(
+                # TODO: ponder if making a new table for TripDescriptor is better
+                vehicle_trip_trip_id=trip_update.trip_trip_id,
+                vehicle_trip_start_date=trip_update.trip_start_date,
+                vehicle_trip_start_time=trip_update.trip_start_time,
+            )
+            geo_shape = GeoShape.objects.filter(
+                shape_id=trip.shape_id, feed=current_feed
+            ).first()
+            geo_shape = geometry.LineString(geo_shape.geometry.coords)
+            location = vehicle_position.vehicle_position_point
+            location = geometry.Point(location.x, location.y)
+            position_in_shape = geo_shape.project(location) / geo_shape.length
 
             next_arrivals.append(
                 {
@@ -100,10 +107,10 @@ class NextTripView(APIView):
                     "departure_time": stop_time_update.departure_time,
                     "in_progress": True,
                     "progression": {
-                        "position_in_shape": 0.465,  # position_in_shape,
-                        "current_stop_sequence": 3,  # vehicle_position.vehicle_current_stop_sequence,
-                        "current_status": "CON_TODA_LA_PATA",  # vehicle_position.vehicle_current_status,
-                        "occupancy_status": "DOBLE_FILITA_POR_FAVOR",  # vehicle_position.vehicle_occupancy_status,
+                        "position_in_shape": position_in_shape,
+                        "current_stop_sequence": vehicle_position.vehicle_current_stop_sequence,
+                        "current_status": vehicle_position.vehicle_current_status,
+                        "occupancy_status": vehicle_position.vehicle_occupancy_status,
                     },
                 }
             )
