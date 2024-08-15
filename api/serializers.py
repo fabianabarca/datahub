@@ -38,6 +38,21 @@ class NextTripSerializer(serializers.Serializer):
     next_arrivals = NextArrivalSerializer(many=True)
 
 
+class NextStopSequenceSerializer(serializers.Serializer):
+    stop_sequence = serializers.IntegerField()
+    stop_id = serializers.CharField()
+    stop_name = serializers.CharField()
+    arrival_time = serializers.DateTimeField()
+    departure_time = serializers.DateTimeField()
+
+
+class NextStopSerializer(serializers.Serializer):
+    trip_id = serializers.CharField()
+    start_date = serializers.DateField()
+    start_time = serializers.DurationField()
+    next_stop_sequence = NextStopSequenceSerializer(many=True)
+
+
 class AgencySerializer(serializers.HyperlinkedModelSerializer):
 
     feed = serializers.PrimaryKeyRelatedField(read_only=True)

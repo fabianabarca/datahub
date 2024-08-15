@@ -55,7 +55,9 @@ class NextTripView(APIView):
             stop_id = request.query_params.get("stop_id")
         else:
             return Response(
-                {"error": "Es necesario especificar el stop_id como parámetro de la solicitud."},
+                {
+                    "error": "Es necesario especificar el stop_id como parámetro de la solicitud."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -126,32 +128,56 @@ class NextTripView(APIView):
             "timestamp": timestamp,
             "next_arrivals": next_arrivals,
         }
-        """
-        data = {
-            "stop_id": "bUCR-0-03",
-            "timestamp": "2024-07-31T16:12:25-06:00",
-            "next_arrivals": [
-                {
-                    "trip_id": "JFH367",
-                    "route_id": "bUCR-L1",
-                    "route_short_name": "L1",
-                    "route_long_name": "Línea 1",
-                    "trip_headsign": "Facultad de Ingeniería",
-                    "wheelchair_accessible": "WHEELCHAIR_ACCESSIBLE",
-                    "arrival_time": "07:15:00",
-                    "departure_time": "07:15:00",
-                    "in_progress": True,
-                    "progression": {
-                        "position_in_shape": 0.465,
-                        "current_stop_sequence": 15,
-                        "current_status": "STOPPED_AT",
-                        "occupancy_status": "EMPTY",
-                    },
-                }
-            ],
-        }
-        """
+
         serializer = NextTripSerializer(data)
+        return Response(serializer.data)
+
+
+class NextStopView(APIView):
+    def get(self, request):
+
+        # Get query parameters
+        trip_id = request.query_params.get("trip_id")
+        start_date = request.query_params.get("start_date")
+        start_time = request.query_params.get("start_time")
+        if not trip_id or not start_date or not start_time:
+            return Response(
+                {
+                    "error": "Es necesario especificar el trip_id, start_date y start_time como parámetros de la solicitud."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        next_stop_sequence = []
+
+        # For upcoming stops
+        current_feed = Feed.objects.filter(is_current=True).latest("retrieved_at")
+        trip_update = TripUpdate.objects.filter(
+            trip_trip_id=trip_id, trip_start_date=start_date, trip_start_time=start_time
+        ).first()
+        stop_time_updates = StopTimeUpdate.objects.filter(
+            trip_update=trip_update
+        ).order_by("stop_sequence")
+
+        for stop_time_update in stop_time_updates:
+            stop = Stop.objects.filter(stop_id=stop_time_update.stop_id).first()
+            next_stop_sequence.append(
+                {
+                    "stop_sequence": stop_time_update.stop_sequence,
+                    "stop_id": stop.stop_id,
+                    "stop_name": stop.stop_name,
+                    "arrival_time": stop_time_update.arrival_time,
+                    "departure_time": stop_time_update.departure_time,
+                }
+            )
+
+        data = {
+            "trip_id": trip_id,
+            "start_date": start_date,
+            "start_time": start_time,
+            "next_stop_sequence": next_stop_sequence,
+        }
+
+        serializer = NextStopSerializer(data)
         return Response(serializer.data)
 
 
