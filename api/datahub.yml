@@ -427,6 +427,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NextTrips'
+        '400':
+          description: Bad Request - Es necesario especificar el stop_id como parámetro de la solicitud.
   /vehicle-positions:
     get:
       summary: Posiciones de los vehículos
