@@ -184,7 +184,7 @@ class Stop(models.Model):
     #    super(Stop, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.stop_name
+        return f"{self.stop_id}: {self.stop_name}"
 
 
 class Route(models.Model):

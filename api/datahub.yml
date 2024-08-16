@@ -465,7 +465,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/NextStops'
         '400':
-          description: Bad Request - Es necesario especificar trip_id, start_date y start_time como parámetros de la solicitud.
+          description: Bad Request - Es necesario especificar todos los parámetros de la solicitud, trip_id, start_date y start_time.
   /vehicle-positions:
     get:
       summary: Posiciones de los vehículos
@@ -1307,14 +1307,24 @@ components:
                 description: Nombre de la parada
                 type: string
                 example: 'Facultad de Ingeniería'
-              arrival_time:
-                description: Hora de llegada a la parada
+              stop_lat:
+                description: Latitud de la parada
+                type: number
+                format: float
+                example: 9.937
+              stop_lon:
+                description: Longitud de la parada
+                type: number
+                format: float
+                example: -84.051
+              arrival:
+                description: Día y hora de llegada a la parada en formato ISO 8601
                 type: string
-                example: '07:15:00'
-              departure_time:
-                description: Hora de salida de la parada
+                example: '2024-07-31T16:12:25-06:00'
+              departure:
+                description: Día y hora de salida de la parada en formato ISO 8601
                 type: string
-                example: '07:15:00'
+                example: '2024-07-31T16:12:25-06:00'
     VehiclePositions:
       type: object
       properties:
