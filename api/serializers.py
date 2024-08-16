@@ -42,8 +42,10 @@ class NextStopSequenceSerializer(serializers.Serializer):
     stop_sequence = serializers.IntegerField()
     stop_id = serializers.CharField()
     stop_name = serializers.CharField()
-    arrival_time = serializers.DateTimeField()
-    departure_time = serializers.DateTimeField()
+    stop_lat = serializers.FloatField()
+    stop_lon = serializers.FloatField()
+    arrival = serializers.DateTimeField()
+    departure = serializers.DateTimeField()
 
 
 class NextStopSerializer(serializers.Serializer):

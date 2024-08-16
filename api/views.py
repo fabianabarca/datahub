@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from shapely import geometry
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .serializers import *
 
@@ -140,44 +140,62 @@ class NextStopView(APIView):
         trip_id = request.query_params.get("trip_id")
         start_date = request.query_params.get("start_date")
         start_time = request.query_params.get("start_time")
+
         if not trip_id or not start_date or not start_time:
             return Response(
                 {
-                    "error": "Es necesario especificar el trip_id, start_date y start_time como parámetros de la solicitud."
+                    "error": "Es necesario especificar todos los parámetros de la solicitud, trip_id, start_date y start_time."
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         next_stop_sequence = []
 
-        # For upcoming stops
-        current_feed = Feed.objects.filter(is_current=True).latest("retrieved_at")
+        # For trips in progress
+        latest_trip_update = FeedMessage.objects.filter(
+            entity_type="trip_update"
+        ).latest("timestamp")
         trip_update = TripUpdate.objects.filter(
-            trip_trip_id=trip_id, trip_start_date=start_date, trip_start_time=start_time
+            feed_message=latest_trip_update,
+            trip_trip_id=trip_id,
+            trip_start_date=start_date,
+            trip_start_time=start_time,
         ).first()
         stop_time_updates = StopTimeUpdate.objects.filter(
             trip_update=trip_update
         ).order_by("stop_sequence")
 
+        current_feed = Feed.objects.filter(is_current=True).latest("retrieved_at")
+
         for stop_time_update in stop_time_updates:
-            stop = Stop.objects.filter(stop_id=stop_time_update.stop_id).first()
+            print(f"La parada: {stop_time_update.stop_id}")
+            stop = Stop.objects.get(
+                stop_id=stop_time_update.stop_id,
+                feed=current_feed,
+            )
             next_stop_sequence.append(
                 {
                     "stop_sequence": stop_time_update.stop_sequence,
                     "stop_id": stop.stop_id,
                     "stop_name": stop.stop_name,
-                    "arrival_time": stop_time_update.arrival_time,
-                    "departure_time": stop_time_update.departure_time,
+                    "stop_lat": stop.stop_lat,
+                    "stop_lon": stop.stop_lon,
+                    "arrival": stop_time_update.arrival_time,
+                    "departure": stop_time_update.departure_time,
                 }
             )
 
         data = {
             "trip_id": trip_id,
             "start_date": start_date,
-            "start_time": start_time,
+            # The serializer needs the timedelta object
+            "start_time": str_to_timedelta(start_time),
             "next_stop_sequence": next_stop_sequence,
         }
 
+        print(data)
         serializer = NextStopSerializer(data)
+
         return Response(serializer.data)
 
 
@@ -483,3 +501,9 @@ def get_schema(request):
     return FileResponse(
         open(file_path, "rb"), as_attachment=True, filename="datahub.yml"
     )
+
+
+def str_to_timedelta(time_str):
+    hours, minutes, seconds = map(int, time_str.split(":"))
+    duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
+    return duration
