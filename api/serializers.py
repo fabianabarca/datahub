@@ -2,6 +2,7 @@ from feed.models import InfoService
 from gtfs.models import *
 from alerts.models import *
 from rest_framework import serializers
+
 # from gtfs.models import GTFSProvider, Route, Trip, StopTime, Stop, FeedInfo, Calendar, CalendarDate, Shape, GeoShape, FareAttribute, FareRule, ServiceAlert, Weather, Social, FeedMessage, TripUpdate, StopTimeUpdate, VehiclePosition, Record, Agency
 
 
@@ -9,6 +10,49 @@ class GTFSProviderSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = GTFSProvider
         fields = "__all__"
+
+
+class ProgressionSerializer(serializers.Serializer):
+    position_in_shape = serializers.FloatField()
+    current_stop_sequence = serializers.IntegerField()
+    current_status = serializers.CharField()
+    occupancy_status = serializers.CharField()
+
+
+class NextArrivalSerializer(serializers.Serializer):
+    trip_id = serializers.CharField()
+    route_id = serializers.CharField()
+    route_short_name = serializers.CharField()
+    route_long_name = serializers.CharField()
+    trip_headsign = serializers.CharField()
+    wheelchair_accessible = serializers.CharField()
+    arrival_time = serializers.DateTimeField()
+    departure_time = serializers.DateTimeField()
+    in_progress = serializers.BooleanField()
+    progression = ProgressionSerializer()
+
+
+class NextTripSerializer(serializers.Serializer):
+    stop_id = serializers.CharField()
+    timestamp = serializers.DateTimeField()
+    next_arrivals = NextArrivalSerializer(many=True)
+
+
+class NextStopSequenceSerializer(serializers.Serializer):
+    stop_sequence = serializers.IntegerField()
+    stop_id = serializers.CharField()
+    stop_name = serializers.CharField()
+    stop_lat = serializers.FloatField()
+    stop_lon = serializers.FloatField()
+    arrival = serializers.DateTimeField()
+    departure = serializers.DateTimeField()
+
+
+class NextStopSerializer(serializers.Serializer):
+    trip_id = serializers.CharField()
+    start_date = serializers.DateField()
+    start_time = serializers.DurationField()
+    next_stop_sequence = NextStopSequenceSerializer(many=True)
 
 
 class AgencySerializer(serializers.HyperlinkedModelSerializer):
@@ -195,7 +239,3 @@ class InfoServiceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = InfoService
         fields = "__all__"
-
-
-
-

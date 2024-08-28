@@ -1,0 +1,12 @@
+[
+    {
+        "model": "gtfs.GeoShape",
+        "pk": 1,
+        "fields": {
+            "feed": "1234",
+            "shape_id": "desde_educacion_sin_milla",
+            "geoshape": "LINESTRING(9.9355494402927100 -84.0491138975951000, 9.9355589010814000 -84.0491582627979000, 9.9355735427550600 -84.0492241246225000)",
+            "has_altitude": "FALSE"
+        }
+    }
+]
