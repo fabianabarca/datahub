@@ -1,9 +1,21 @@
 from django.conf import settings
 from django.http import FileResponse
 from feed.models import InfoService
-from gtfs.models import GTFSProvider, Route, Trip
+from gtfs.models import (
+    GTFSProvider,
+    Route,
+    Trip,
+    FeedMessage,
+    TripUpdate,
+    StopTimeUpdate,
+)
 from rest_framework import viewsets, permissions
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from shapely import geometry
+from datetime import datetime, timedelta
 
 from .serializers import *
 
@@ -34,6 +46,159 @@ class GTFSProviderViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
 
 
+class NextTripView(APIView):
+    def get(self, request):
+        # TODO: check for errors and exceptions and validations when data is not found
+
+        # Get query parameters
+        if request.query_params.get("stop_id"):
+            stop_id = request.query_params.get("stop_id")
+        else:
+            return Response(
+                {
+                    "error": "Es necesario especificar el stop_id como parámetro de la solicitud."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if request.query_params.get("timestamp"):
+            timestamp = request.query_params.get("timestamp")
+        else:
+            timestamp = datetime.now()
+        next_arrivals = []
+
+        # For trips in progress
+        latest_trip_update = FeedMessage.objects.filter(
+            entity_type="trip_update"
+        ).latest("timestamp")
+        # TODO: check TTL (time to live)
+        stop_time_updates = StopTimeUpdate.objects.filter(
+            feed_message=latest_trip_update, stop_id=stop_id
+        )
+        current_feed = Feed.objects.filter(is_current=True).latest("retrieved_at")
+
+        for stop_time_update in stop_time_updates:
+            trip_update = TripUpdate.objects.get(
+                id=stop_time_update.trip_update.id,
+            )
+            trip = Trip.objects.filter(
+                trip_id=trip_update.trip_trip_id, feed=current_feed
+            ).first()
+            route = Route.objects.filter(
+                route_id=trip.route_id, feed=current_feed
+            ).first()
+            vehicle_position = VehiclePosition.objects.get(
+                # TODO: ponder if making a new table for TripDescriptor is better
+                vehicle_trip_trip_id=trip_update.trip_trip_id,
+                vehicle_trip_start_date=trip_update.trip_start_date,
+                vehicle_trip_start_time=trip_update.trip_start_time,
+            )
+            geo_shape = GeoShape.objects.filter(
+                shape_id=trip.shape_id, feed=current_feed
+            ).first()
+            geo_shape = geometry.LineString(geo_shape.geometry.coords)
+            location = vehicle_position.vehicle_position_point
+            location = geometry.Point(location.x, location.y)
+            position_in_shape = geo_shape.project(location) / geo_shape.length
+
+            next_arrivals.append(
+                {
+                    "trip_id": trip.trip_id,
+                    "route_id": route.route_id,
+                    "route_short_name": route.route_short_name,
+                    "route_long_name": route.route_long_name,
+                    "trip_headsign": trip.trip_headsign,
+                    "wheelchair_accessible": trip.wheelchair_accessible,
+                    "arrival_time": stop_time_update.arrival_time,
+                    "departure_time": stop_time_update.departure_time,
+                    "in_progress": True,
+                    "progression": {
+                        "position_in_shape": position_in_shape,
+                        "current_stop_sequence": vehicle_position.vehicle_current_stop_sequence,
+                        "current_status": vehicle_position.vehicle_current_status,
+                        "occupancy_status": vehicle_position.vehicle_occupancy_status,
+                    },
+                }
+            )
+
+            # For upcoming trips
+
+        data = {
+            "stop_id": stop_id,
+            "timestamp": timestamp,
+            "next_arrivals": next_arrivals,
+        }
+
+        serializer = NextTripSerializer(data)
+        return Response(serializer.data)
+
+
+class NextStopView(APIView):
+    def get(self, request):
+
+        # Get query parameters
+        trip_id = request.query_params.get("trip_id")
+        start_date = request.query_params.get("start_date")
+        start_time = request.query_params.get("start_time")
+
+        if not trip_id or not start_date or not start_time:
+            return Response(
+                {
+                    "error": "Es necesario especificar todos los parámetros de la solicitud, trip_id, start_date y start_time."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        next_stop_sequence = []
+
+        # For trips in progress
+        latest_trip_update = FeedMessage.objects.filter(
+            entity_type="trip_update"
+        ).latest("timestamp")
+        trip_update = TripUpdate.objects.filter(
+            feed_message=latest_trip_update,
+            trip_trip_id=trip_id,
+            trip_start_date=start_date,
+            trip_start_time=start_time,
+        ).first()
+        stop_time_updates = StopTimeUpdate.objects.filter(
+            trip_update=trip_update
+        ).order_by("stop_sequence")
+
+        current_feed = Feed.objects.filter(is_current=True).latest("retrieved_at")
+
+        for stop_time_update in stop_time_updates:
+            print(f"La parada: {stop_time_update.stop_id}")
+            stop = Stop.objects.get(
+                stop_id=stop_time_update.stop_id,
+                feed=current_feed,
+            )
+            next_stop_sequence.append(
+                {
+                    "stop_sequence": stop_time_update.stop_sequence,
+                    "stop_id": stop.stop_id,
+                    "stop_name": stop.stop_name,
+                    "stop_lat": stop.stop_lat,
+                    "stop_lon": stop.stop_lon,
+                    "arrival": stop_time_update.arrival_time,
+                    "departure": stop_time_update.departure_time,
+                }
+            )
+
+        data = {
+            "trip_id": trip_id,
+            "start_date": start_date,
+            # The serializer needs the timedelta object
+            "start_time": str_to_timedelta(start_time),
+            "next_stop_sequence": next_stop_sequence,
+        }
+
+        print(data)
+        serializer = NextStopSerializer(data)
+
+        return Response(serializer.data)
+
+
 class AgencyViewSet(viewsets.ModelViewSet):
     """
     Agencias de transporte público.
@@ -55,12 +220,12 @@ class StopViewSet(viewsets.ModelViewSet):
     serializer_class = StopSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = [
-        "route_id",
-        "location_type",
-        "wheelchair_boarding",
-        "located_within",
-        "close_to",
-        "distance",
+        "stop_id",
+        "stop_code",
+        "stop_name",
+        "stop_lat",
+        "stop_lon",
+        "stop_url",
     ]
     # permission_classes = [permissions.IsAuthenticated]
 
@@ -336,3 +501,9 @@ def get_schema(request):
     return FileResponse(
         open(file_path, "rb"), as_attachment=True, filename="datahub.yml"
     )
+
+
+def str_to_timedelta(time_str):
+    hours, minutes, seconds = map(int, time_str.split(":"))
+    duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
+    return duration
