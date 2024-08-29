@@ -1,3 +1,5 @@
+import re
+from django.core.exceptions import ValidationError
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
 
@@ -6,16 +8,24 @@ from django.db.models.signals import post_save
 from alerts.multicast import test_signal
 
 
+def validate_no_spaces_or_special_symbols(value):
+    if re.search(r"[^a-zA-Z0-9_]", value):
+        raise ValidationError(
+            "Este campo no puede contener espacios ni símbolos especiales, solamente letras, números y guiones bajos."
+        )
+
+
 class GTFSProvider(models.Model):
     """A provider provides transportation services GTFS data.
 
-    It might or might not be the same as the agency in the GTFS feed. A provider can have multiple agencies.
+    It might or might not be the same as the agency in the GTFS feed. A GTFS provider can serve multiple agencies.
     """
 
     provider_id = models.BigAutoField(primary_key=True)
     code = models.CharField(
         max_length=31,
         help_text="Código (típicamente el acrónimo) de la empresa. No debe tener espacios ni símbolos especiales.",
+        validators=[validate_no_spaces_or_special_symbols],
     )
     name = models.CharField(max_length=255, help_text="Nombre de la empresa.")
     description = models.TextField(
@@ -179,7 +189,7 @@ class Stop(models.Model):
     )
 
     # Build stop_point from stop_lat and stop_lon
-    #def save(self, *args, **kwargs):
+    # def save(self, *args, **kwargs):
     #    self.stop_point = Point(self.stop_lon, self.stop_lat)
     #    super(Stop, self).save(*args, **kwargs)
 
@@ -282,7 +292,7 @@ class CalendarDate(models.Model):
     holiday_name = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.service_id
+        return f"{self.holiday_name} ({self.service_id})"
 
 
 class Shape(models.Model):
@@ -517,6 +527,7 @@ class FareRule(models.Model):
 # GTFS Realtime
 # -------------
 
+
 class FeedMessage(models.Model):
     """
     Header of a GTFS Realtime FeedMessage.
@@ -560,7 +571,7 @@ class TripUpdate(models.Model):
     trip_trip_id = models.CharField(max_length=255, blank=True, null=True)
     trip_route_id = models.CharField(max_length=255, blank=True, null=True)
     trip_direction_id = models.IntegerField(blank=True, null=True)
-    trip_start_time = models.TimeField(blank=True, null=True)
+    trip_start_time = models.DurationField(blank=True, null=True)
     trip_start_date = models.DateField(blank=True, null=True)
     trip_schedule_relationship = models.CharField(
         max_length=31, blank=True, null=True
@@ -598,7 +609,7 @@ class StopTimeUpdate(models.Model):
     trip_update = models.ForeignKey(TripUpdate, on_delete=models.CASCADE)
 
     # Stop ID (string)
-    stop_sequence = models.IntegerField()
+    stop_sequence = models.IntegerField(blank=True, null=True)
     stop_id = models.CharField(max_length=127, blank=True, null=True)
 
     # StopTimeEvent (message): arrival
