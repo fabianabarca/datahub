@@ -10,6 +10,8 @@ import pandas as pd
 import requests
 from google.transit import gtfs_realtime_pb2 as gtfs_rt
 from google.protobuf import json_format
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 from .models import *
 
@@ -106,7 +108,11 @@ def get_vehiclepositions():
     providers = GTFSProvider.objects.filter(is_active=True)
     for provider in providers:
         vehicle_positions = gtfs_rt.FeedMessage()
-        vehicle_positions_response = requests.get(provider.vehicle_positions_url)
+        try:
+           vehicle_positions_response = requests.get(provider.vehicle_positions_url)
+        except:
+            print(f"Error fetching vehicle positions from {provider.vehicle_positions_url}")
+            continue
         vehicle_positions.ParseFromString(vehicle_positions_response.content)
 
         # Save feed message to database
@@ -173,6 +179,19 @@ def get_vehiclepositions():
             for row in vehicle_positions_df.to_dict(orient="records")
         ]
         VehiclePosition.objects.bulk_create(objects)
+
+    # Send status update to WebSocket
+    message = {}
+    message["last_update"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    message["number_providers"] = len(providers)
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "status",
+        {
+            "type": "status_message",
+            "message": message,
+        },
+    )
 
     return "VehiclePositions saved to database"
 
