@@ -14,8 +14,7 @@ requests
 pandas
 geopandas
 gtfs-realtime-bindings
-djangorestframework
-drf-spectacular
-python-decouple
 psycopg2-binary
 gunicorn
+mkdocs-material
+python-decouple
