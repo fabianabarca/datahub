@@ -13,7 +13,7 @@ from google.protobuf import json_format
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
-from .models import *
+from gtfs.models import *
 
 
 @shared_task
@@ -104,7 +104,7 @@ def get_schedule():
 
 
 @shared_task
-def get_vehiclepositions():
+def get_vehicle_positions():
     providers = GTFSProvider.objects.filter(is_active=True)
     for provider in providers:
         vehicle_positions = gtfs_rt.FeedMessage()
@@ -197,7 +197,7 @@ def get_vehiclepositions():
 
 
 @shared_task
-def get_tripupdates():
+def get_trip_updates():
     providers = GTFSProvider.objects.filter(is_active=True)
     for provider in providers:
         try:
@@ -334,5 +334,5 @@ def get_tripupdates():
 
 
 @shared_task
-def get_alerts():
+def get_service_alerts():
     return "Fetching Alerts"
