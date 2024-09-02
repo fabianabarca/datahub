@@ -110,6 +110,7 @@ def get_vehicle_positions():
         vehicle_positions = gtfs_rt.FeedMessage()
         try:
            vehicle_positions_response = requests.get(provider.vehicle_positions_url)
+           print(f"Fetching vehicle positions from {provider.vehicle_positions_url}")
         except:
             print(f"Error fetching vehicle positions from {provider.vehicle_positions_url}")
             continue

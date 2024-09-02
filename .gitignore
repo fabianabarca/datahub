@@ -1,6 +1,9 @@
 # Configuration files
 *.cfg
 
+# Ubuntu server
+restart_services.sh
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
