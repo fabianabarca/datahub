@@ -87,12 +87,12 @@ class NextTripView(APIView):
             route = Route.objects.filter(
                 route_id=trip.route_id, feed=current_feed
             ).first()
-            vehicle_position = VehiclePosition.objects.get(
+            vehicle_position = VehiclePosition.objects.filter(
                 # TODO: ponder if making a new table for TripDescriptor is better
                 vehicle_trip_trip_id=trip_update.trip_trip_id,
                 vehicle_trip_start_date=trip_update.trip_start_date,
                 vehicle_trip_start_time=trip_update.trip_start_time,
-            )
+            ).first()
             geo_shape = GeoShape.objects.filter(
                 shape_id=trip.shape_id, feed=current_feed
             ).first()
