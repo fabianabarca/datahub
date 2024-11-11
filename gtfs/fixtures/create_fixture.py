@@ -54,7 +54,7 @@ tab_to_model_mapping = {
     "fare_rules": ("gtfs.farerule", model_field_mapping["farerule"]),
     "shapes": ("gtfs.shape", model_field_mapping["shape"]),
     "trips": ("gtfs.trip", model_field_mapping["trip"]),\
-    'GEOSHAPES': ('gtfs.geoshape', model_field_mapping['geoshape']),
+    #'GEOSHAPES': ('gtfs.geoshape', model_field_mapping['geoshape']),
 }
 
 
@@ -210,6 +210,19 @@ additional_data = [
             "service_alerts_url": None,
             "timezone": "America/costa_rica",
             "is_active": True,
+        },
+    },
+    {
+        "model": "gtfs.feedinfo",
+        "pk": 1,
+        "fields": {
+            "feed": 1,
+            "feed_publisher_name": "TCU Tropicalización de la Tecnología",
+            "feed_publisher_url": "https://tropicalizacion.eie.ucr.ac.cr/",
+            "feed_lang": "es",
+            "feed_start_date": "2024-10-01",
+            "feed_end_date": "2024-12-21",
+            "feed_version": "v2024.2.1",
         },
     },
     {

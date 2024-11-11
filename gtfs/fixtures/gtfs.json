@@ -32744,6 +32744,19 @@
         }
     },
     {
+        "model": "gtfs.feedinfo",
+        "pk": 1,
+        "fields": {
+            "feed": 1,
+            "feed_publisher_name": "TCU Tropicalización de la Tecnología",
+            "feed_publisher_url": "https://tropicalizacion.eie.ucr.ac.cr/",
+            "feed_lang": "es",
+            "feed_start_date": "2024-10-01",
+            "feed_end_date": "2024-12-21",
+            "feed_version": "v2024.2.1"
+        }
+    },
+    {
         "model": "gtfs.feed",
         "pk": 1,
         "fields": {
