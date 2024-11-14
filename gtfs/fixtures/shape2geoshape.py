@@ -1,8 +1,12 @@
 import json
+import os, sys
 from collections import defaultdict
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+json_shapes = os.path.join(script_dir, "shapes.json")
+
 # Read the shapes.json file
-with open('shapes.json', 'r') as file:
+with open(json_shapes, 'r') as file:
     shapes_data = json.load(file)
 
 # Group entries by shape_id
@@ -32,6 +36,7 @@ for shape_id, points in shapes_dict.items():
     new_shapes_data.append(new_entry)
     pk_counter += 1
 
+json_geoshapes = os.path.join(script_dir, "geoshapes.json")
 # Write the new JSON structure to a new file
-with open('geoshapes.json', 'w') as file:
+with open(json_geoshapes, 'w') as file:
     json.dump(new_shapes_data, file, indent=4)

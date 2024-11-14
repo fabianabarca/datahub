@@ -242,6 +242,6 @@ additional_data = [
 fixtures.extend(additional_data)
 
 # Write fixtures to a file
-json_file_path = os.path.join(script_dir, "gtfs.json")
+json_file_path = os.path.join(script_dir, "shapes.json")
 with open(json_file_path, "w") as f:
     json.dump(fixtures, f, ensure_ascii=False, indent=4)

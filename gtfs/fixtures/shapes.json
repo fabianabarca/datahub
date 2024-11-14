@@ -10750,32 +10750,5 @@
             "shape_pt_sequence": 146,
             "shape_dist_traveled": 3.519
         }
-    },
-    {
-        "model": "gtfs.gtfsprovider",
-        "pk": 1,
-        "fields": {
-            "code": "bUCR",
-            "name": "bUCR",
-            "description": "Bus de la UCR",
-            "website": "https://bucr.digital",
-            "schedule_url": null,
-            "trip_updates_url": null,
-            "vehicle_positions_url": null,
-            "service_alerts_url": null,
-            "timezone": "America/costa_rica",
-            "is_active": true
-        }
-    },
-    {
-        "model": "gtfs.feed",
-        "pk": 1,
-        "fields": {
-            "provider": 1,
-            "http_etag": null,
-            "http_last_modified": "2024-07-11T00:00:00Z",
-            "is_current": true,
-            "retrieved_at": "2024-07-11T04:28:41.332Z"
-        }
     }
 ]
