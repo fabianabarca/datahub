@@ -8,10 +8,14 @@ import io
 import json
 import pandas as pd
 import requests
+import random
+import time
+import numpy as np
 from google.transit import gtfs_realtime_pb2 as gtfs_rt
 from google.protobuf import json_format
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from prometheus_client import Summary
 
 from gtfs.models import *
 
@@ -334,3 +338,27 @@ def get_trip_updates():
 @shared_task
 def get_service_alerts():
     return "Fetching Alerts"
+
+#Define Prometheus metrics to track elapsed time
+PANDAS_EXECUTION_TIME = Summary('pandas_execution_time', 'Time spent executing a pandas task')
+
+@shared_task
+def metrics_test():
+
+    # Start time
+    start_time = time.time()
+
+    #Simulate a task using pandas
+    df = pd.DataFrame(np.random.randint(0, 100, size=(1000, 4)), columns=list('ABCD'))
+    df['E'] = df['A'] + df['B'] + df['C'] + df['D']
+
+    # End time
+    end_time = time.time()
+
+    # Calculate the time taken
+    elapsed_time = end_time - start_time
+
+    # Update the time taken in metric
+    PANDAS_EXECUTION_TIME.observe(elapsed_time)
+
+    return random.randint(1, 100)
