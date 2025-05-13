@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "django_filters",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
