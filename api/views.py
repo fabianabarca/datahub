@@ -508,12 +508,7 @@ class ServiceAlertViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceAlertSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = [
-        "active_period",
-        "informed_entity",
-        "cause",
-        "effect",
-        "header_text",
-        "description_text",
+        "alert_id", "effect", "route_id", "trip_id", "service_date", "service_start_time", "service_end_time", "alert_description"
     ]
     # permission_classes = [permissions.IsAuthenticated]
 
