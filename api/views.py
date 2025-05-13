@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.http import FileResponse
-from feed.models import InfoService
+from feed.models import InfoService, InfoProvider
 from gtfs.models import (
     GTFSProvider,
     Route,
@@ -9,6 +9,9 @@ from gtfs.models import (
     FeedMessage,
     TripUpdate,
     StopTimeUpdate,
+    VehiclePosition,
+    Alert,
+
 )
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
@@ -505,11 +508,12 @@ class ServiceAlertViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceAlertSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = [
-        "alert_id",
-        "route_id",
-        "trip_id",
-        "service_start_time",
-        "service_date",
+        "active_period",
+        "informed_entity",
+        "cause",
+        "effect",
+        "header_text",
+        "description_text",
     ]
     # permission_classes = [permissions.IsAuthenticated]
 
@@ -605,10 +609,22 @@ class InfoServiceViewSet(viewsets.ModelViewSet):
     Aplicaciones conectadas al servidor de datos.
     """
 
-    queryset = InfoService.objects.all().order_by("created_at")
+    queryset = InfoService.objects.all()
     serializer_class = InfoServiceSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["type", "name"]
+    # permission_classes = [permissions.IsAuthenticated]
+
+
+class InfoProviderViewSet(viewsets.ModelViewSet):
+    """
+    Proveedores de servicios conectados al servidor de datos.
+    """
+
+    queryset = InfoProvider.objects.all()
+    serializer_class = InfoProviderSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["name"]
     # permission_classes = [permissions.IsAuthenticated]
 
 

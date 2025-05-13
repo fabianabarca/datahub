@@ -19,6 +19,7 @@ router.register(r"stop-times", views.StopTimeViewSet)
 router.register(r"fare-attributes", views.FareAttributeViewSet)
 router.register(r"fare-rules", views.FareRuleViewSet)
 router.register(r"feed-info", views.FeedInfoViewSet)
+router.register(r"alerts", views.ServiceAlertViewSet)
 
 
 # Wire up our API using automatic URL routing.

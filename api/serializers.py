@@ -1,4 +1,4 @@
-from feed.models import InfoService
+from feed.models import InfoService, InfoProvider
 from gtfs.models import *
 from alerts.models import *
 from rest_framework import serializers
@@ -272,3 +272,10 @@ class InfoServiceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = InfoService
         fields = "__all__"
+
+
+class InfoProviderSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = InfoProvider
+        fields = "__all__"
+
